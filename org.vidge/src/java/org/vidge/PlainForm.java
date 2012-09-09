@@ -172,6 +172,9 @@ public class PlainForm {
 				for (int a = 0; a < controllerList.size(); a++) {
 					PropertyController controller = controllerList.get(a);
 					Control valueControl = controller.getNameControl();
+					if (!valueControl.isEnabled()) {
+						continue;
+					}
 					if (!controller.isValid()) {
 						try {
 							Color color = e.display.getSystemColor(SWT.COLOR_RED);
