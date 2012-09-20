@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.vidge.PropertyController;
 import org.vidge.SharedImages;
+import org.vidge.Vidge;
 import org.vidge.VidgeResources;
 
 public class TextField extends Composite {
@@ -52,16 +53,18 @@ public class TextField extends Composite {
 	}
 
 	private void buildButtons() {
-		clearButton = new CustomButton(this, VidgeResources.getInstance().getImage(SharedImages.DELETE), "Delete");
-		clearButton.setLayoutData(new GridData());
-		clearButton.addSelectionListener(new SelectionAdapter() {
+		if (!Vidge.NO_CLEAR_ACTIONS) {
+			clearButton = new CustomButton(this, VidgeResources.getInstance().getImage(SharedImages.DELETE), "Delete");
+			clearButton.setLayoutData(new GridData());
+			clearButton.addSelectionListener(new SelectionAdapter() {
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				controller.getExplorer().getValidator().validateComplete(null);
-				controller.getFieldAdapter().setVisualValue("");
-			}
-		});
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					controller.getExplorer().getValidator().validateComplete(null);
+					controller.getFieldAdapter().setVisualValue("");
+				}
+			});
+		}
 	}
 
 	public String getText() {

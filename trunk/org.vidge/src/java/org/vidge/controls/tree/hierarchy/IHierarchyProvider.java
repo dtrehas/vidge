@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Tree;
 
 public interface IHierarchyProvider<T> {
 
@@ -17,8 +18,6 @@ public interface IHierarchyProvider<T> {
 
 	public Object invokeMethod(Object obj, Method method);
 
-	public List<String> getColumnList();
-
 	public void handleEvent(Event event);
 
 	public int getRootCount();
@@ -30,4 +29,10 @@ public interface IHierarchyProvider<T> {
 	public boolean isMultipleSelect();
 
 	public void commitChanges(Object changes);
+
+	public void customizeTree(Tree tree);
+
+	public String getMessage();
+
+	public String getTitle();
 }

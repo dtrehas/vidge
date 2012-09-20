@@ -3,14 +3,18 @@ package org.vidge.controls.calendar;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -26,39 +30,38 @@ public class DateChooser extends Composite {
 	public static final int DATE = 1 << 90;
 	public static final int TIME = 1 << 91;
 	public static final int TIME_DATE = 1 << 92;
-	private static final int DAY = 0;
-	private static final int MONTH = 1;
-	private static final int YEAR = 2;
+	public static final int SECONDS = 1 << 93;
 	private static final int HOUR = 3;
-	private static final int MINUTE = 4;
-	private static final int COUNT = 5;
+	private static final int COUNT = 6;
 	private Spinner[] controls = new Spinner[COUNT];
 	private String[] labels = new String[] {
-			Messages.DateChooser_day, Messages.DateChooser_month, Messages.DateChooser_year, Messages.DateChooser_hour, Messages.DateChooser_minute
+			Messages.DateChooser_day, Messages.DateChooser_month, Messages.DateChooser_year, Messages.DateChooser_hour, Messages.DateChooser_minute, "Second"
 	};
 	private String[] separators = new String[] {
-			Messages.DateChooser_date_separator, Messages.DateChooser_date_separator, " ", Messages.DateChooser_time_separator, ""}; //$NON-NLS-3$ //$NON-NLS-5$
+			Messages.DateChooser_date_separator, Messages.DateChooser_date_separator, " ", Messages.DateChooser_time_separator, ":", ""
+	};
 	private int[] min = new int[] {
-			1, 1, 2005, 0, 0
+			1, 1, 2000, 0, 0, 0
 	};
 	private int[] max = new int[] {
-			31, 12, 2100, 23, 59
+			31, 12, 2050, 23, 59, 59
 	};
 	private int[] shift = new int[] {
-			0, 1, 0, 0, 0
+			0, 1, 0, 0, 0, 0
 	};
 	private int[] calendarValues = new int[] {
-			Calendar.DAY_OF_MONTH, Calendar.MONTH, Calendar.YEAR, Calendar.HOUR_OF_DAY, Calendar.MINUTE
+			Calendar.DAY_OF_MONTH, Calendar.MONTH, Calendar.YEAR, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND
 	};
 	private Button calendarButton;
 	private List<ICalendarListener> listeners = new ArrayList<ICalendarListener>();
+	private Map<Integer, Spinner> controlMap = new HashMap<Integer, Spinner>();
 	private int start;
 	private int finish;
 
 	public DateChooser(Composite parent, String name, int style) {
 		super(parent, SWT.NULL);
 		GridLayout layout = new GridLayout();
-		layout.numColumns = 11;
+		layout.numColumns = 12;
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		layout.horizontalSpacing = 5;
@@ -66,20 +69,58 @@ public class DateChooser extends Composite {
 		this.setLayout(layout);
 		boolean showDate = (style & DATE) != 0;
 		boolean showTime = (style & TIME) != 0;
+		boolean showSeconds = (style & SECONDS) != 0;
 		if ((style & TIME_DATE) != 0) {
 			showDate = true;
 			showTime = true;
 		}
-		if (!showDate && !showTime) {
+		if (!showDate && !showTime && !showSeconds) {
 			showDate = true;
 		}
-		start = (showDate ? 0 : HOUR);
-		finish = (showTime ? COUNT : HOUR);
+		if (showDate) {
+			start = 0;
+			if (showTime) {
+				if (showSeconds) {
+					finish = COUNT;
+				} else {
+					finish = COUNT - 1;
+				}
+			} else {
+				finish = HOUR;
+			}
+		} else {
+			if (showTime) {
+				start = HOUR;
+				if (showSeconds) {
+					finish = COUNT;
+				} else {
+					finish = COUNT - 1;
+				}
+			} else {
+				if (showSeconds) {
+					start = COUNT - 1;
+					finish = COUNT;
+				} else {
+					finish = HOUR;
+				}
+			}
+		}
 		if (name != null && name.length() > 0) {
 			new Label(this, SWT.NONE).setText(name);
 		}
 		for (int i = start; i < finish; i++) {
 			controls[i] = new Spinner(this, SWT.BORDER);
+			controls[i].addKeyListener(new KeyListener() {
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+				}
+
+				@Override
+				public void keyPressed(KeyEvent e) {
+					e.doit = false;
+				}
+			});
 			if (i < (finish - 1)) {
 				new Label(this, SWT.NONE).setText(separators[i]);
 			}
@@ -88,6 +129,7 @@ public class DateChooser extends Composite {
 		for (int i = start; i < finish; i++) {
 			setupControl(i);
 			controls[i].setSelection(now.get(calendarValues[i]) + shift[i]);
+			controls[i].setData(calendarValues[i]);
 		}
 		if (showDate) {
 			makeCalendarButton(this);
@@ -122,11 +164,15 @@ public class DateChooser extends Composite {
 		current.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		current.setMinimum(min[i]);
 		current.setMaximum(max[i]);
-		current.addModifyListener(new ModifyListener() {
+		current.addSelectionListener(new SelectionListener() {
 
 			@Override
-			public void modifyText(ModifyEvent e) {
+			public void widgetSelected(SelectionEvent e) {
 				fireListenerChanged();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
 	}
@@ -134,8 +180,13 @@ public class DateChooser extends Composite {
 	public Calendar getCalendar() {
 		Calendar calendar = Calendar.getInstance();
 		for (int a = 0; a < calendarValues.length; a++) {
+			Integer val = calendarValues[a];
 			if (a >= start && a < finish) {
-				calendar.set(calendarValues[a], controls[a].getSelection() - shift[a]);
+				for (int b = 0; b < controls.length; b++) {
+					if (controls[b] != null && controls[b].getData().equals(val)) {
+						calendar.set(calendarValues[a], controls[b].getSelection() - shift[a]);
+					}
+				}
 			} else {
 				calendar.set(calendarValues[a], 0 - shift[a]);
 			}
@@ -150,7 +201,6 @@ public class DateChooser extends Composite {
 	public void setCalendar(Calendar calendar) {
 		checkWidget();
 		if (calendar != null) {
-			fireListenerChanged();
 			for (int i = 0; i < controls.length; i++) {
 				if (controls[i] != null) {
 					controls[i].setSelection(calendar.get(calendarValues[i]) + shift[i]);
