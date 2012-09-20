@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Tree;
 
 public abstract class AbstractHierarchyProvider<T> implements IHierarchyProvider<T> {
 
@@ -34,6 +35,20 @@ public abstract class AbstractHierarchyProvider<T> implements IHierarchyProvider
 			// e.printStackTrace();
 		}
 		return method;
+	}
+
+	@Override
+	public String getTitle() {
+		return "";
+	}
+
+	@Override
+	public String getMessage() {
+		return "";
+	}
+
+	@Override
+	public void customizeTree(Tree tree) {
 	}
 
 	@Override

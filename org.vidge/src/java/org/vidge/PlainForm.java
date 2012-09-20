@@ -172,7 +172,7 @@ public class PlainForm {
 				for (int a = 0; a < controllerList.size(); a++) {
 					PropertyController controller = controllerList.get(a);
 					Control valueControl = controller.getNameControl();
-					if (!valueControl.isEnabled()) {
+					if (valueControl == null || !valueControl.isEnabled()) {
 						continue;
 					}
 					if (!controller.isValid()) {

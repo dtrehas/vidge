@@ -28,6 +28,7 @@ public class Vidge {
 	public static final int NO_ACTIONS = ALLACTIONS << 5;
 	public static final int NO_VIRTUAL = ALLACTIONS << 6;
 	public static final int NO_TOOLKIT = ALLACTIONS << 7;
+	public static boolean NO_CLEAR_ACTIONS = false;
 
 	private Vidge() {
 	}
