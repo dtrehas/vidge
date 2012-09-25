@@ -24,6 +24,7 @@ import org.vidge.FormRegistry;
 import org.vidge.SharedImages;
 import org.vidge.Vidge;
 import org.vidge.VidgeResources;
+import org.vidge.controls.chooser.IPageListener;
 import org.vidge.controls.chooser.NTable;
 import org.vidge.controls.chooser.VTable;
 import org.vidge.dialog.SingleObjectDialog;
@@ -332,5 +333,13 @@ public class TablePanel<T> {
 
 	public List<T> getInput() {
 		return vtable.getInput();
+	}
+
+	public void setPageListener(IPageListener iPageListener) {
+		vtable.setPageListener(iPageListener);
+	}
+
+	public void setPageInput(List<T> page) {
+		vtable.setPageInput(page);
 	}
 }

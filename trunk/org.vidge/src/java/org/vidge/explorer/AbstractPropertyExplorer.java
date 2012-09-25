@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.Image;
 import org.vidge.controls.tree.hierarchy.IHierarchyProvider;
 import org.vidge.form.validator.IValidator;
 import org.vidge.form.validator.ValidatorRegistry;
+import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IObjectWizard;
 import org.vidge.inface.IPropertyExplorer;
 import org.vidge.util.StringUtil;
@@ -31,7 +32,8 @@ public abstract class AbstractPropertyExplorer implements IPropertyExplorer {
 	private boolean allowChild = true;
 	private Object mockValue, oldValue;
 	private boolean wrapped = false;
-	private boolean flushable = false;;
+	private boolean flushable = false;
+	private IEntityExplorer entityExplorer;;
 
 	protected abstract Object getValueInt();
 
@@ -39,6 +41,11 @@ public abstract class AbstractPropertyExplorer implements IPropertyExplorer {
 
 	public AbstractPropertyExplorer(boolean allowChild) {
 		this.allowChild = allowChild;
+	}
+
+	@Override
+	public void setEntityExplorer(IEntityExplorer entityExplorer) {
+		this.entityExplorer = entityExplorer;
 	}
 
 	@Override
@@ -206,5 +213,10 @@ public abstract class AbstractPropertyExplorer implements IPropertyExplorer {
 	@Override
 	public boolean isEmbedded() {
 		return false;
+	}
+
+	@Override
+	public IEntityExplorer getEntityExplorer() {
+		return entityExplorer;
 	}
 }

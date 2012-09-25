@@ -68,4 +68,8 @@ public interface IPropertyExplorer extends Comparable<IPropertyExplorer> {
 	public int getImageWidth();
 
 	public int getImageHeight();
+
+	public void setEntityExplorer(IEntityExplorer entityExplorer);
+
+	public IEntityExplorer getEntityExplorer();
 }

@@ -31,6 +31,7 @@ public class FieldAdapterForm extends AbstractFieldAdapter {
 		group.setLayout(new GridLayout());
 		group.setText(explorer.getLabel());
 		IEntityExplorer entityExplorer = FormRegistry.getEntityExplorer(explorer.getPropertyClass());
+		explorer.getEntityExplorer().addChild(entityExplorer);
 		if (explorer.getValue() == null) {
 			entityExplorer.createInput();
 			explorer.setValue(entityExplorer.getInput());

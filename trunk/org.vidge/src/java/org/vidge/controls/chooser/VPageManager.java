@@ -164,6 +164,7 @@ public class VPageManager {
 		});
 		countCombo.addSelectionListener(new SelectionAdapter() {
 
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				count = countValues[countCombo.getSelectionIndex()];
 				firePageChanged();
@@ -174,6 +175,7 @@ public class VPageManager {
 		parentPane.setBackgroundMode(SWT.INHERIT_FORCE);
 		parentPane.addPaintListener(new PaintListener() {
 
+			@Override
 			public void paintControl(PaintEvent e) {
 				Color color = e.display.getSystemColor(SWT.COLOR_DARK_GRAY);
 				e.gc.setForeground(color);
@@ -266,35 +268,6 @@ public class VPageManager {
 		parentPane.pack();
 	}
 
-	@SuppressWarnings("rawtypes")
-	public List getNext(List input) {
-		if ((input == null) || (input.size() == 0)) {
-			return input;
-		}
-		if (totalItemsCount == 0) {
-			from = FIRST_ELEMENT;
-		}
-		totalItemsCount = input.size();
-		List result = null;
-		if (input.size() <= count) {
-			result = input;
-		} else {
-			int toIndex = from - 1 + count;
-			if ((toIndex) >= input.size()) {
-				toIndex = input.size();
-			}
-			if ((from - 1) > toIndex) {
-				from = toIndex - count;
-				if (from < 0) {
-					from = 0;
-				}
-			}
-			result = input.subList(from > 0 ? from - 1 : 0, toIndex);
-		}
-		showLabel();
-		return result;
-	}
-
 	protected void getLastPage() {
 		from = totalItemsCount - count + 1;
 		if (from < FIRST_ELEMENT) {
@@ -315,5 +288,9 @@ public class VPageManager {
 
 	public void setFrom(int indexOf) {
 		from = indexOf;
+	}
+
+	public void clearListeners() {
+		pageListeners.clear();
 	}
 }

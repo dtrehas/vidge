@@ -13,6 +13,8 @@ public interface IEntityExplorer extends IFormInputChangeListener, IFormDataProv
 
 	public IEntityExplorer copy();
 
+	public void addChild(IEntityExplorer child);
+
 	public void clear();
 
 	public List<IPropertyExplorer> getPropertyList();
