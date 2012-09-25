@@ -8,9 +8,9 @@ import java.util.List;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.langcom.locale.LocalizedString;
-import org.vidge.inface.IFormDataProvider;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IForm;
+import org.vidge.inface.IFormDataProvider;
 import org.vidge.inface.IFormInputChangeListener;
 import org.vidge.inface.IPropertyExplorer;
 import org.vidge.inface.ValueAction;
@@ -142,6 +142,7 @@ public class FormExplorer<T> extends EntityExplorer {
 		if (IFormInputChangeListener.class.isAssignableFrom(form.getClass())) {
 			value = ((IFormInputChangeListener) form).doInputChanged(value, action, attribute);
 		}
+		parentChanged(value, action, attribute);
 		return value;
 	}
 

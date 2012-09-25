@@ -8,8 +8,8 @@ import java.util.Map;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.vidge.inface.IFormDataProvider;
 import org.vidge.inface.IEntityExplorer;
+import org.vidge.inface.IFormDataProvider;
 import org.vidge.inface.IFormInputChangeListener;
 import org.vidge.inface.IPropertyExplorer;
 import org.vidge.inface.ValueAction;
@@ -19,6 +19,7 @@ public abstract class EntityExplorer implements IEntityExplorer, IFormInputChang
 
 	private List<IPropertyExplorer> attributes = new ArrayList<IPropertyExplorer>();
 	private Map<String, IPropertyExplorer> attributesMap = new HashMap<String, IPropertyExplorer>();
+	private List<IEntityExplorer> childList = new ArrayList<IEntityExplorer>();
 	protected Object input;
 
 	public List<IPropertyExplorer> getPropertyList() {
@@ -36,6 +37,11 @@ public abstract class EntityExplorer implements IEntityExplorer, IFormInputChang
 	public void clear() {
 		attributes.clear();
 		input = null;
+	}
+
+	@Override
+	public void addChild(IEntityExplorer child) {
+		childList.add(child);
 	}
 
 	@Override
@@ -77,7 +83,14 @@ public abstract class EntityExplorer implements IEntityExplorer, IFormInputChang
 
 	@Override
 	public Object doInputChanged(Object value, ValueAction action, String attribute) {
+		parentChanged(value, action, attribute);
 		return value;
+	}
+
+	protected void parentChanged(Object value, ValueAction action, String attribute) {
+		for (IEntityExplorer entityExplorer : childList) {
+			entityExplorer.doInputChanged(value, action, attribute);
+		}
 	}
 
 	@Override
@@ -100,6 +113,7 @@ public abstract class EntityExplorer implements IEntityExplorer, IFormInputChang
 
 	public boolean addProperty(IPropertyExplorer e) {
 		attributesMap.put(e.getPropertyName(), e);
+		e.setEntityExplorer(this);
 		return attributes.add(e);
 	}
 
@@ -119,6 +133,7 @@ public abstract class EntityExplorer implements IEntityExplorer, IFormInputChang
 		this.attributes = attributes;
 		for (IPropertyExplorer attr : attributes) {
 			attributesMap.put(attr.getPropertyName(), attr);
+			attr.setEntityExplorer(this);
 		}
 	}
 

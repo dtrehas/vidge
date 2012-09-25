@@ -232,6 +232,15 @@ public class VTable<T> extends Composite {
 		refresh();
 	}
 
+	public void setPageInput(List<T> listIn) {
+		objectList.clear();
+		if (listIn == null || listIn.size() == 0) {
+		} else {
+			objectList.addAll(listIn);
+		}
+		refresh();
+	}
+
 	private void createPaginator(int style) {
 		pageManager = new VPageManager(this, style);
 		pageManager.getControl().setLayoutData(new GridData(SWT.END, SWT.END, true, false));
@@ -461,5 +470,14 @@ public class VTable<T> extends Composite {
 
 	public void showFilterDialog() {
 		new VFilterDialog<T>(this).open();
+	}
+
+	public void setTotalItemsCount(int totalItemsCount) {
+		pageManager.setItemsCount(totalItemsCount);
+	}
+
+	public void setPageListener(IPageListener iPageListener) {
+		pageManager.clearListeners();
+		pageManager.addPageListener(iPageListener);
 	}
 }
