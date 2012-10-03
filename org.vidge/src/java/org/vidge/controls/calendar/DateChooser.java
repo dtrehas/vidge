@@ -3,9 +3,7 @@ package org.vidge.controls.calendar;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -54,7 +52,6 @@ public class DateChooser extends Composite {
 	};
 	private Button calendarButton;
 	private List<ICalendarListener> listeners = new ArrayList<ICalendarListener>();
-	private Map<Integer, Spinner> controlMap = new HashMap<Integer, Spinner>();
 	private int start;
 	private int finish;
 
@@ -108,8 +105,19 @@ public class DateChooser extends Composite {
 		if (name != null && name.length() > 0) {
 			new Label(this, SWT.NONE).setText(name);
 		}
+		setUpControls();
+		if (showDate) {
+			makeCalendarButton(this);
+		}
+		this.pack();
+		setDate(new Date());
+	}
+
+	private void setUpControls() {
+		Calendar now = Calendar.getInstance();
 		for (int i = start; i < finish; i++) {
-			controls[i] = new Spinner(this, SWT.BORDER);
+			Spinner current = new Spinner(this, SWT.BORDER);
+			controls[i] = current;
 			controls[i].addKeyListener(new KeyListener() {
 
 				@Override
@@ -121,20 +129,27 @@ public class DateChooser extends Composite {
 					e.doit = false;
 				}
 			});
+			current.setSelection(now.get(calendarValues[i]) + shift[i]);
+			current.setData(calendarValues[i]);
+			current.setToolTipText(labels[i]);
+			current.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			current.setMinimum(min[i]);
+			current.setMaximum(max[i]);
+			current.addSelectionListener(new SelectionListener() {
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					fireListenerChanged();
+				}
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
 			if (i < (finish - 1)) {
 				new Label(this, SWT.NONE).setText(separators[i]);
 			}
 		}
-		Calendar now = Calendar.getInstance();
-		for (int i = start; i < finish; i++) {
-			setupControl(i);
-			controls[i].setSelection(now.get(calendarValues[i]) + shift[i]);
-			controls[i].setData(calendarValues[i]);
-		}
-		if (showDate) {
-			makeCalendarButton(this);
-		}
-		this.pack();
 	}
 
 	public DateChooser(Composite parent, int style) {
@@ -154,25 +169,6 @@ public class DateChooser extends Composite {
 				if (calendarDialog.open() == IDialogConstants.OK_ID) {
 					setCalendar(calendarDialog.getCalendar());
 				}
-			}
-		});
-	}
-
-	protected void setupControl(int i) {
-		final Spinner current = controls[i];
-		current.setToolTipText(labels[i]);
-		current.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		current.setMinimum(min[i]);
-		current.setMaximum(max[i]);
-		current.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				fireListenerChanged();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
 	}
