@@ -24,17 +24,18 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.vidge.SharedImages;
 import org.vidge.VidgeResources;
 
 public class PageManager {
 
+	private static final int MINWIDTH = 70;
+	private static final String COUNT2 = "Count: ";
 	private static final int FIRST_ELEMENT = 1;
 	private static final int COUNT_ELEMENT = 20;
+	public static final int NO_LAST_PAGE = SWT.APPLICATION_MODAL << 17;
 	private Composite parentPane;
 	private Label propsLabel;
-	private FormToolkit toolkit;
 	private Combo countCombo;
 	private int from, count;
 
@@ -48,86 +49,84 @@ public class PageManager {
 	private int totalItemsCount = 0;
 	private ToolBar toolBar;
 	private Label countLabel;
+	private boolean showLastButton = true;
+	private ToolItem itemNext;
+	private ToolItem itemFirst;
+	private ToolItem itemPrev;
 
 	public PageManager(final Composite parent, int style) {
 		from = FIRST_ELEMENT;
 		count = COUNT_ELEMENT;
-		toolkit = new FormToolkit(parent.getDisplay());
+		showLastButton = !((style & NO_LAST_PAGE) == 0);
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 8;
 		layout.marginWidth = 5;
 		layout.marginHeight = 5;
 		layout.horizontalSpacing = 5;
-		int borderStyle = SWT.NONE;
-		parentPane = ((style & ObjectChooser.TOOLKIT) != 0) ? toolkit.createComposite(parent, borderStyle) : new Composite(parent, borderStyle);
+		parentPane = new Composite(parent, SWT.NONE);
 		parentPane.setLayout(layout);
-		new Label(parentPane, SWT.FILL).setText("Count: ");
-		countLabel = new Label(parentPane, SWT.FILL | SWT.BORDER);
+		new Label(parentPane, SWT.NONE).setText(COUNT2);
+		countLabel = new Label(parentPane, SWT.RIGHT | SWT.BORDER);
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.minimumWidth = MINWIDTH;
+		gridData.grabExcessHorizontalSpace = true;
+		countLabel.setLayoutData(gridData);
 		toolBar = new ToolBar(parentPane, SWT.FLAT);
-		if ((style & ObjectChooser.TOOLKIT) != 0) {
-			toolkit.adapt(toolBar);
-		}
 		toolBar.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
-		ToolItem item = new ToolItem(toolBar, SWT.PUSH);
-		item.setImage(VidgeResources.getInstance().getImage(SharedImages.FIRST));
-		item.addSelectionListener(new SelectionAdapter() {
+		itemFirst = new ToolItem(toolBar, SWT.PUSH);
+		itemFirst.setImage(VidgeResources.getInstance().getImage(SharedImages.FIRST));
+		itemFirst.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				getFirstPage();
 			}
 		});
-		item = new ToolItem(toolBar, SWT.PUSH);
-		item.setImage(VidgeResources.getInstance().getImage(SharedImages.PREVIOUS));
-		item.addSelectionListener(new SelectionAdapter() {
+		itemFirst.setToolTipText("First");
+		itemPrev = new ToolItem(toolBar, SWT.PUSH);
+		itemPrev.setImage(VidgeResources.getInstance().getImage(SharedImages.PREVIOUS));
+		itemPrev.setToolTipText("Previous");
+		itemPrev.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				getPreviousPage();
 			}
 		});
-		if ((style & ObjectChooser.TOOLKIT) != 0) {
-			toolkit.createLabel(parentPane, Messages.PageManager_0, SWT.FILL);
-			propsLabel = toolkit.createLabel(parentPane, "           ", SWT.FILL | SWT.BORDER); //$NON-NLS-1$
-		} else {
-			new Label(parentPane, SWT.FILL).setText(Messages.PageManager_0);
-			propsLabel = new Label(parentPane, SWT.FILL | SWT.BORDER);
-		}
+		Label label = new Label(parentPane, SWT.NONE);
+		label.setText(Messages.PageManager_0);
+		label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		propsLabel = new Label(parentPane, SWT.RIGHT | SWT.BORDER);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.minimumWidth = MINWIDTH;
+		gridData.grabExcessHorizontalSpace = true;
+		propsLabel.setLayoutData(gridData);
 		toolBar = new ToolBar(parentPane, SWT.FLAT);
-		if ((style & ObjectChooser.TOOLKIT) != 0) {
-			toolkit.adapt(toolBar);
-		}
 		toolBar.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-		item = new ToolItem(toolBar, SWT.PUSH);
-		item.setImage(VidgeResources.getInstance().getImage(SharedImages.NEXT));
-		item.addSelectionListener(new SelectionAdapter() {
+		itemNext = new ToolItem(toolBar, SWT.PUSH);
+		itemNext.setImage(VidgeResources.getInstance().getImage(SharedImages.NEXT));
+		itemNext.setToolTipText("Next");
+		itemNext.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				getNextPage();
 			}
 		});
-		item = new ToolItem(toolBar, SWT.PUSH);
-		item.setImage(VidgeResources.getInstance().getImage(SharedImages.LAST));
-		item.addSelectionListener(new SelectionAdapter() {
+		if (showLastButton) {
+			ToolItem item = new ToolItem(toolBar, SWT.PUSH);
+			item.setImage(VidgeResources.getInstance().getImage(SharedImages.LAST));
+			item.setToolTipText("Last");
+			item.addSelectionListener(new SelectionAdapter() {
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				getLastPage();
-			}
-		});
-		if ((style & ObjectChooser.TOOLKIT) != 0) {
-			// toolkit.createLabel(parentPane, Messages.PageManager_1,
-			// SWT.FILL);
-		} else {
-			// new Label(parentPane, SWT.FILL).setText(Messages.PageManager_1);
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					getLastPage();
+				}
+			});
 		}
 		countCombo = new Combo(parentPane, SWT.DROP_DOWN);
-		countCombo.add("20"); //$NON-NLS-1$
-		countCombo.add("50"); //$NON-NLS-1$
-		countCombo.add("100"); //$NON-NLS-1$
-		countCombo.add("200"); //$NON-NLS-1$
-		countCombo.add("500"); //$NON-NLS-1$
+		setCountValues(countValues);
 		countCombo.select(0);
 		countCombo.addModifyListener(new ModifyListener() {
 
@@ -173,22 +172,20 @@ public class PageManager {
 		});
 		countCombo.addSelectionListener(new SelectionAdapter() {
 
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				count = countValues[countCombo.getSelectionIndex()];
 				firePageChanged();
 			}
 		});
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.minimumWidth = 50;
-		propsLabel.setLayoutData(gridData);
 		countCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		propsLabel.setAlignment(SWT.RIGHT);
 		showLabel();
 		parentPane.setBackgroundMode(SWT.INHERIT_FORCE);
 		parentPane.addPaintListener(new PaintListener() {
 
+			@Override
 			public void paintControl(PaintEvent e) {
-				Color color = e.display.getSystemColor(SWT.COLOR_GRAY);
+				Color color = e.display.getSystemColor(SWT.COLOR_DARK_GRAY);
 				e.gc.setForeground(color);
 				e.gc.drawRectangle(1, 1, parentPane.getSize().x - 3, parentPane.getSize().y - 3);
 			}
@@ -221,12 +218,7 @@ public class PageManager {
 
 	public void getNextPage() {
 		try {
-			if (totalItemsCount == 0) {
-				return;
-			}
-			if ((from + count) <= totalItemsCount) {
-				from = from + count;
-			}
+			from = from + count;
 			showLabel();
 			firePageChanged();
 		} catch (Exception e) {
@@ -271,14 +263,7 @@ public class PageManager {
 		}
 	}
 
-	public void setItemsCount(int totalItemsCount) {
-		this.totalItemsCount = totalItemsCount;
-		from = FIRST_ELEMENT;
-		countLabel.setText("   " + totalItemsCount + "  ");
-		showLabel();
-	}
-
-	public List getNext(List input) {
+	public <T> List<T> getNext(List<T> input) {
 		if ((input == null) || (input.size() == 0)) {
 			return input;
 		}
@@ -286,7 +271,7 @@ public class PageManager {
 			from = FIRST_ELEMENT;
 		}
 		totalItemsCount = input.size();
-		List result = null;
+		List<T> result = null;
 		if (input.size() <= count) {
 			result = input;
 		} else {
@@ -304,6 +289,14 @@ public class PageManager {
 		}
 		showLabel();
 		return result;
+	}
+
+	public void setItemsCount(int totalItemsCount) {
+		this.totalItemsCount = totalItemsCount;
+		from = FIRST_ELEMENT;
+		countLabel.setText("   " + totalItemsCount + "   ");
+		showLabel();
+		parentPane.pack();
 	}
 
 	protected void getLastPage() {
@@ -326,5 +319,26 @@ public class PageManager {
 
 	public void setFrom(int indexOf) {
 		from = indexOf;
+	}
+
+	public void clearListeners() {
+		pageListeners.clear();
+	}
+
+	public void setEnabledNext(boolean isWorking) {
+		itemNext.setEnabled(isWorking);
+	}
+
+	public int[] getCountValues() {
+		return countValues;
+	}
+
+	public void setCountValues(int[] countValues) {
+		this.countValues = countValues;
+		countCombo.removeAll();
+		for (int dd : countValues) {
+			countCombo.add(dd + ""); //$NON-NLS-1$
+		}
+		countCombo.select(0);
 	}
 }

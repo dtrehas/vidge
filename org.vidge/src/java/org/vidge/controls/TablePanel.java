@@ -342,4 +342,8 @@ public class TablePanel<T> {
 	public void setPageInput(List<T> page) {
 		vtable.setPageInput(page);
 	}
+
+	public void setCountValues(int[] countValues) {
+		vtable.getPageManager().setCountValues(countValues);
+	}
 }
