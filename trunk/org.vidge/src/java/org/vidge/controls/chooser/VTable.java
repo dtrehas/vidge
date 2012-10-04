@@ -58,7 +58,7 @@ public class VTable<T> extends Composite {
 	protected IEntityExplorer tableExplorer;
 	protected List<VColumn<T>> columns = new ArrayList<VColumn<T>>();
 	protected boolean isNumColumn;
-	protected VPageManager pageManager;
+	protected PageManager pageManager;
 	protected int from = 0, count = 0, addNum = 1;
 	protected String[] columnStrings = new String[0];
 	protected DefaultTableComparator<T> comparator = new DefaultTableComparator<T>();
@@ -238,11 +238,14 @@ public class VTable<T> extends Composite {
 		} else {
 			objectList.addAll(listIn);
 		}
+		if (pageManager != null) {
+			pageManager.setEnabledNext(pageManager.getCount() < listIn.size());
+		}
 		refresh();
 	}
 
 	private void createPaginator(int style) {
-		pageManager = new VPageManager(this, style);
+		pageManager = new PageManager(this, style);
 		pageManager.getControl().setLayoutData(new GridData(SWT.END, SWT.END, true, false));
 		pageManager.addPageListener(new IPageListener() {
 
@@ -479,5 +482,9 @@ public class VTable<T> extends Composite {
 	public void setPageListener(IPageListener iPageListener) {
 		pageManager.clearListeners();
 		pageManager.addPageListener(iPageListener);
+	}
+
+	public PageManager getPageManager() {
+		return pageManager;
 	}
 }
