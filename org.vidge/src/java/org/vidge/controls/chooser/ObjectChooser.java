@@ -157,12 +157,13 @@ public class ObjectChooser<T> {
 		}
 		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
+			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				try {
 					selection = (T) ((IStructuredSelection) event.getSelection()).getFirstElement();
 					selectionList.clear();
 					for (Object selected : ((StructuredSelection) tableViewer.getSelection()).toArray()) {
-						selectionList.add((T) selected);
+						selectionList.add(selected);
 					}
 				} catch (RuntimeException e) {
 					e.printStackTrace();
@@ -258,6 +259,7 @@ public class ObjectChooser<T> {
 		menuItem.setText(Messages.ObjectChooser_FILTERED);
 		menuItem.addSelectionListener(new SelectionAdapter() {
 
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				((MenuItem) e.getSource()).setSelection(false);
 				removeFiltering();
@@ -267,12 +269,14 @@ public class ObjectChooser<T> {
 		menuItem.setText(Messages.ObjectChooser_SHOW_FILTER_DIALOG);
 		menuItem.addSelectionListener(new SelectionAdapter() {
 
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				showFilterDialog();
 			}
 		});
 		tableViewer.getTable().addMouseListener(new MouseAdapter() {
 
+			@Override
 			public void mouseDown(MouseEvent e) {
 				if (e.button == 3) {
 					popupMenu.getItem(0).setSelection(model.isFiltered());
@@ -298,7 +302,7 @@ public class ObjectChooser<T> {
 	}
 
 	public void showFilterDialog() {
-		new FilterDialog<T>((ObjectChooser<T>) ObjectChooser.this).open();
+		new FilterDialog<T>(ObjectChooser.this).open();
 	}
 
 	public void addContextMenuItem(final IAction action, int index) {
@@ -306,6 +310,7 @@ public class ObjectChooser<T> {
 		menuItem.setText(action.getText());
 		menuItem.addSelectionListener(new SelectionAdapter() {
 
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				action.run();
 			}
@@ -339,6 +344,7 @@ public class ObjectChooser<T> {
 			}
 			tc.addSelectionListener(new SelectionAdapter() {
 
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					if (sortable) {
 						TableColumn selectedColumn = (TableColumn) e.getSource();
@@ -412,7 +418,7 @@ public class ObjectChooser<T> {
 
 	public void select(int index) {
 		if (this.getInput().size() > 0) {
-			setSelection((T) this.getInput().get(index));
+			setSelection(this.getInput().get(index));
 		}
 	}
 
@@ -543,6 +549,7 @@ public class ObjectChooser<T> {
 			this.column = column;
 		}
 
+		@Override
 		public void paintControl(PaintEvent e) {
 			for (TableItem item : tableViewer.getTable().getItems()) {
 				item.setBackground(model.getColumns().indexOf(column), column.getExplorer().getBackground());
