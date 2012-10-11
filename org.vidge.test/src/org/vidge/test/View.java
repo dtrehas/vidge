@@ -27,7 +27,10 @@ import org.vidge.Vidge;
 import org.vidge.controls.TablePanel;
 import org.vidge.controls.TreePanel;
 import org.vidge.controls.calendar.CalendarChooser;
+import org.vidge.controls.calendar.CalendarEvent;
 import org.vidge.controls.calendar.DateChooser;
+import org.vidge.controls.calendar.ICalendarListener;
+import org.vidge.controls.chooser.IPageListener;
 import org.vidge.controls.chooser.NTable;
 import org.vidge.controls.chooser.ObjectChooser;
 import org.vidge.controls.chooser.VTable;
@@ -115,7 +118,7 @@ public class View extends ViewPart {
 		createForm5.setEnabled(false);
 		item = new TabItem(folder, SWT.NONE);
 		item.setText("  Chooser  ");
-		List<FormTestClass> objectList = new ArrayList<FormTestClass>();
+		final List<FormTestClass> objectList = new ArrayList<FormTestClass>();
 		objectList.add(input);
 		objectList.add(new FormTestClass("xxx", "ffffffffffffgggggggggg", 456, new Long(34L), new Date(), null));
 		objectList.add(new FormTestClass("53xxx", "ffffffffffffgggggggfhfhggg", 456, new Long(34L), new Date(), null));
@@ -139,9 +142,28 @@ public class View extends ViewPart {
 		item = new TabItem(folder, SWT.NONE);
 		item.setText("  VTable ");
 		for (int a = 0; a < 10000; a++) {
-			objectList.add(new FormTestClass("78888xxx", "ffffffffffffgggggggggg", 456, new Long(34L), new Date(), null));
+			objectList.add(new FormTestClass("78888xxx", "ffffffffffffgggggggggg", a, new Long(34L), new Date(), null));
 		}
 		item.setControl(new VTable(folder, FormTestClass.class, objectList, VTable.PAGES));
+		//
+		item = new TabItem(folder, SWT.NONE);
+		item.setText("  VTable Page2 ");
+		final VTable vTable = new VTable(folder, FormTestClass.class, objectList, VTable.PAGES);
+		item.setControl(vTable);
+		// vTable.setTotalItemsCount(objectList.size());
+		vTable.setPageListener(new IPageListener() {
+
+			@Override
+			public void pageChanged(int from, int count) {
+				int toIndex = from + count;
+				if (toIndex >= objectList.size()) {
+					toIndex = objectList.size() - 1;
+				}
+				List<FormTestClass> subList = objectList.subList(from, toIndex);
+				vTable.setPageInput(subList);
+			}
+		});
+		//
 		item = new TabItem(folder, SWT.NONE);
 		item.setText("  Vigets ");
 		item.setControl(createVigetsPanel(folder));
@@ -153,8 +175,18 @@ public class View extends ViewPart {
 
 	private Control createVigetsPanel(Composite composite) {
 		Composite parent = new Composite(composite, SWT.NONE);
-		parent.setLayout(new GridLayout(3, false));
-		new DateChooser(parent, SWT.NONE);
+		parent.setLayout(new GridLayout(2, true));
+		DateChooser dateChooser2 = new DateChooser(parent, DateChooser.DATE);
+		dateChooser2.addCalendarListener(new ICalendarListener() {
+
+			@Override
+			public void dateChanged(CalendarEvent event) {
+				System.out.println("------------sdf-----------" + event.getCalendar().getTime());
+			}
+		});
+		new DateChooser(parent, DateChooser.TIME_DATE);
+		new DateChooser(parent, DateChooser.TIME);
+		final DateChooser dateChooser = new DateChooser(parent, DateChooser.DATE | DateChooser.TIME | DateChooser.SECONDS);
 		new CalendarChooser(parent);
 		Button button = new Button(parent, SWT.PUSH);
 		button.setText("Wizard");
@@ -162,6 +194,11 @@ public class View extends ViewPart {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				Date date = dateChooser.getDate();
+				System.out.println("---------------sdf--------  " + date);
+				dateChooser.setDate(date);
+				date = dateChooser.getDate();
+				System.out.println("---------------sdf--------  " + date);
 				ExtendedWizardDialog dialog = new ExtendedWizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), new Wizard() {
 
 					{
