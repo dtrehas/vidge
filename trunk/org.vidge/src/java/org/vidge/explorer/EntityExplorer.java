@@ -10,12 +10,13 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IFormDataProvider;
+import org.vidge.inface.IFormFactory;
 import org.vidge.inface.IFormInputChangeListener;
 import org.vidge.inface.IPropertyExplorer;
 import org.vidge.inface.ValueAction;
 
 @SuppressWarnings("rawtypes")
-public abstract class EntityExplorer implements IEntityExplorer, IFormInputChangeListener, IFormDataProvider {
+public abstract class EntityExplorer implements IEntityExplorer, IFormInputChangeListener, IFormDataProvider, IFormFactory {
 
 	private List<IPropertyExplorer> attributes = new ArrayList<IPropertyExplorer>();
 	private Map<String, IPropertyExplorer> attributesMap = new HashMap<String, IPropertyExplorer>();
@@ -152,5 +153,15 @@ public abstract class EntityExplorer implements IEntityExplorer, IFormInputChang
 	@Override
 	public boolean refresh() {
 		return true;
+	}
+
+	@Override
+	public Object newInstance(Class<?> inputClass) {
+		try {
+			return inputClass.newInstance();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

@@ -467,16 +467,6 @@ public class TreePanel {
 					editCollection();
 				}
 			});
-			item = new MenuItem(menu, SWT.PUSH);
-			item.setText("Clear Collection");
-			item.setImage(VidgeResources.getInstance().getImage(SharedImages.DBREM));
-			item.addSelectionListener(new SelectionAdapter() {
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					clearCollection();
-				}
-			});
 		} else if (explorer != null) {
 			if (nodeBundle.propertyName == null) {
 				item = new MenuItem(menu, SWT.PUSH);

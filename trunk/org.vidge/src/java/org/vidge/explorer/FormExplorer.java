@@ -11,6 +11,7 @@ import org.langcom.locale.LocalizedString;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IForm;
 import org.vidge.inface.IFormDataProvider;
+import org.vidge.inface.IFormFactory;
 import org.vidge.inface.IFormInputChangeListener;
 import org.vidge.inface.IPropertyExplorer;
 import org.vidge.inface.ValueAction;
@@ -112,13 +113,15 @@ public class FormExplorer<T> extends EntityExplorer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void createInput() {
+	public Object createInput() {
 		try {
-			Object newInstance = getInput.getReturnType().newInstance();
+			Object newInstance = newInstance(getInput.getReturnType());
 			form.setInput((T) newInstance);
+			return newInstance;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	@Override
@@ -181,5 +184,13 @@ public class FormExplorer<T> extends EntityExplorer {
 	@Override
 	public boolean refresh() {
 		return contextRule == null ? true : contextRule.refresh();
+	}
+
+	@Override
+	public Object newInstance(Class<?> inputClass) {
+		if (IFormFactory.class.isAssignableFrom(form.getClass())) {
+			return ((IFormFactory) form).newInstance(inputClass);
+		}
+		return super.newInstance(inputClass);
 	}
 }

@@ -31,7 +31,7 @@ public interface IEntityExplorer extends IFormInputChangeListener, IFormDataProv
 
 	public Class<?> getInputClass();
 
-	public void createInput();
+	public Object createInput();
 
 	public String getLabel();
 
@@ -54,4 +54,6 @@ public interface IEntityExplorer extends IFormInputChangeListener, IFormDataProv
 	boolean remove();
 
 	boolean refresh();
+
+	public Object newInstance(Class<?> inputClass);
 }

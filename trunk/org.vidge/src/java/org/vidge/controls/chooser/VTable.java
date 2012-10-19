@@ -238,9 +238,6 @@ public class VTable<T> extends Composite {
 		} else {
 			objectList.addAll(listIn);
 		}
-		if (pageManager != null) {
-			pageManager.setEnabledNext(pageManager.getCount() < listIn.size());
-		}
 		refresh();
 	}
 
