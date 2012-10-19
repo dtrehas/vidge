@@ -19,12 +19,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
 import org.vidge.FormRegistry;
 import org.vidge.PlainForm;
 import org.vidge.Vidge;
-import org.vidge.controls.TablePanel;
 import org.vidge.controls.TreePanel;
 import org.vidge.controls.calendar.CalendarChooser;
 import org.vidge.controls.calendar.CalendarEvent;
@@ -43,7 +41,6 @@ import org.vidge.test.entity.FormTestClass2;
 import org.vidge.test.form.TestForm;
 import org.vidge.test.form.TestForm2;
 import org.vidge.test.form.TestForm3;
-import org.vidge.test.form.TestForm4;
 import org.vidge.util.FormContext;
 
 public class View extends ViewPart {
@@ -53,101 +50,42 @@ public class View extends ViewPart {
 
 	public void createPartControl(Composite parent) {
 		Vidge.registerForm(FormTestClass2.class, TestForm2.class);
-		// Vidge.registerForm(FormTestClass.class, TestForm.class);
-		// Vidge.registerForm(FormTestClass.class, TestForm3.class);
-		// Vidge.registerForm(FormTestClass.class, TestForm4.class);
 		parent.setLayout(new FillLayout());
 		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL);
 		final FormTestClass input = new FormTestClass();
 		final TreePanel treePanel = new TreePanel(new ObjectExplorer(input));
 		treePanel.createViewer(sashForm);
-		// Vidge.createTree(sashForm, input);
 		Composite composite = new Composite(sashForm, SWT.NONE);
 		composite.setLayout(new GridLayout());
 		folder = new TabFolder(composite, SWT.TOP);
 		folder.setLayoutData(new GridData(GridData.FILL_BOTH));
-		TabItem item = new TabItem(folder, SWT.NONE);
-		item.setText("  Form raw class  ");
-		PlainForm plainForm = new PlainForm(input);
-		plainForm.addStatusListener(new IStatusListener() {
-
-			@Override
-			public void statusChanged(PropertyStatus status) {
-				treePanel.refresh();
-			}
+		pageOfRawClass(input, treePanel);
+		pageOfRegisteredFormWithEmbedded(input, treePanel);
+		pageOformWithEmbeddedList(input, treePanel);
+		pageOfDisabledForm();
+		final List<FormTestClass> objectList = createSmallTestList(input);
+		pageOfObjectChooser(objectList);
+		pageOfNTable(objectList);
+		createBigList(objectList);
+		pageOfVTableWithPages(objectList);
+		pageOfVTableWithOuterPageListener(objectList);
+		pageOfVidgets();
+		sashForm.setWeights(new int[] {
+				20, 80
 		});
-		item.setControl(plainForm.getPane(folder, SWT.NONE));
-		FormRegistry.registerContextForm(FormContext.TABLE.name(), FormTestClass.class, TestForm.class);
-		item = new TabItem(folder, SWT.NONE);
-		item.setText("  Registered form with embedded");
-		PlainForm createForm = Vidge.createForm(new TestForm(input));
-		createForm.addStatusListener(new IStatusListener() {
+	}
 
-			@Override
-			public void statusChanged(PropertyStatus status) {
-				treePanel.refresh();
-			}
-		});
-		item.setControl(createForm.getPane(folder, SWT.NONE));
+	protected void pageOfVidgets() {
+		TabItem item;
 		item = new TabItem(folder, SWT.NONE);
-		item.setText("  Form3  ");
-		PlainForm createForm2 = Vidge.createForm(new TestForm3(input));
-		createForm2.addStatusListener(new IStatusListener() {
+		item.setText("Vigets");
+		item.setControl(createVigetsPanel(folder));
+	}
 
-			@Override
-			public void statusChanged(PropertyStatus status) {
-				treePanel.refresh();
-			}
-		});
-		item.setControl(createForm2.getPane(folder, SWT.NONE));
+	protected void pageOfVTableWithOuterPageListener(final List<FormTestClass> objectList) {
+		TabItem item;
 		item = new TabItem(folder, SWT.NONE);
-		item.setText("  Form4  ");
-		PlainForm createForm4 = Vidge.createForm(new TestForm4(input));
-		createForm4.addStatusListener(new IStatusListener() {
-
-			@Override
-			public void statusChanged(PropertyStatus status) {
-				treePanel.refresh();
-			}
-		});
-		item.setControl(createForm4.getPane(folder, SWT.NONE));
-		item = new TabItem(folder, SWT.NONE);
-		item.setText("  Form5  ");
-		PlainForm createForm5 = Vidge.createForm(new PreferencesForm());
-		item.setControl(createForm5.getPane(folder, SWT.NONE));
-		createForm5.setEnabled(false);
-		item = new TabItem(folder, SWT.NONE);
-		item.setText("  Chooser  ");
-		final List<FormTestClass> objectList = new ArrayList<FormTestClass>();
-		objectList.add(input);
-		objectList.add(new FormTestClass("xxx", "ffffffffffffgggggggggg", 456, new Long(34L), new Date(), null));
-		objectList.add(new FormTestClass("53xxx", "ffffffffffffgggggggfhfhggg", 456, new Long(34L), new Date(), null));
-		objectList.add(new FormTestClass("678xxx", "ffffffffffffggggggfhggggg", 456, new Long(34L), new Date(), null));
-		objectList.add(new FormTestClass("78888xxx", "ffffffffffffgggggggggg", 456, new Long(34L), new Date(), null));
-		item.setControl(new ObjectChooser<FormTestClass>(folder, SWT.NONE, TestForm.class, objectList).getControl());
-		//
-		item = new TabItem(folder, SWT.NONE);
-		item.setText("  NTable ");
-		item.setControl(new NTable(folder, FormTestClass.class, objectList));
-		//
-		//
-		item = new TabItem(folder, SWT.NONE);
-		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
-		Composite createComposite = toolkit.createComposite(folder);
-		createComposite.setLayout(new FillLayout());
-		item.setText("  VTable Toolkit ");
-		TablePanel createTable = Vidge.createTable(createComposite, FormTestClass.class, objectList, VTable.PAGES);
-		item.setControl(createComposite);
-		//
-		item = new TabItem(folder, SWT.NONE);
-		item.setText("  VTable ");
-		for (int a = 0; a < 10000; a++) {
-			objectList.add(new FormTestClass("78888xxx", "ffffffffffffgggggggggg", a, new Long(34L), new Date(), null));
-		}
-		item.setControl(new VTable(folder, FormTestClass.class, objectList, VTable.PAGES));
-		//
-		item = new TabItem(folder, SWT.NONE);
-		item.setText("  VTable Page2 ");
+		item.setText("VTable With Outer Page Listener ");
 		final VTable vTable = new VTable(folder, FormTestClass.class, objectList, VTable.PAGES);
 		item.setControl(vTable);
 		// vTable.setTotalItemsCount(objectList.size());
@@ -163,14 +101,97 @@ public class View extends ViewPart {
 				vTable.setPageInput(subList);
 			}
 		});
-		//
+	}
+
+	protected void pageOfVTableWithPages(final List<FormTestClass> objectList) {
+		TabItem item;
 		item = new TabItem(folder, SWT.NONE);
-		item.setText("  Vigets ");
-		item.setControl(createVigetsPanel(folder));
-		// /
-		sashForm.setWeights(new int[] {
-				30, 70
+		item.setText("VTable With Pages");
+		item.setControl(new VTable(folder, FormTestClass.class, objectList, VTable.PAGES));
+	}
+
+	protected void createBigList(final List<FormTestClass> objectList) {
+		for (int a = 0; a < 10000; a++) {
+			objectList.add(new FormTestClass("78888xxx", "ffffffffffffgggggggggg", a, new Long(34L), new Date(), null));
+		}
+	}
+
+	protected void pageOfNTable(final List<FormTestClass> objectList) {
+		TabItem item;
+		item = new TabItem(folder, SWT.NONE);
+		item.setText("NTable");
+		item.setControl(new NTable(folder, FormTestClass.class, objectList));
+	}
+
+	protected void pageOfObjectChooser(final List<FormTestClass> objectList) {
+		TabItem item;
+		item = new TabItem(folder, SWT.NONE);
+		item.setText("ObjectChooser");
+		item.setControl(new ObjectChooser<FormTestClass>(folder, SWT.NONE, TestForm.class, objectList).getControl());
+	}
+
+	protected List<FormTestClass> createSmallTestList(final FormTestClass input) {
+		final List<FormTestClass> objectList = new ArrayList<FormTestClass>();
+		objectList.add(input);
+		objectList.add(new FormTestClass("xxx", "ffffffffffffgggggggggg", 456, new Long(34L), new Date(), null));
+		objectList.add(new FormTestClass("53xxx", "ffffffffffffgggggggfhfhggg", 456, new Long(34L), new Date(), null));
+		objectList.add(new FormTestClass("678xxx", "ffffffffffffggggggfhggggg", 456, new Long(34L), new Date(), null));
+		objectList.add(new FormTestClass("78888xxx", "ffffffffffffgggggggggg", 456, new Long(34L), new Date(), null));
+		return objectList;
+	}
+
+	protected void pageOfDisabledForm() {
+		TabItem item;
+		item = new TabItem(folder, SWT.NONE);
+		item.setText("Disabled Form");
+		PlainForm createForm5 = Vidge.createForm(new PreferencesForm());
+		item.setControl(createForm5.getPane(folder, SWT.NONE));
+		createForm5.setEnabled(false);
+	}
+
+	protected void pageOformWithEmbeddedList(final FormTestClass input, final TreePanel treePanel) {
+		TabItem item;
+		item = new TabItem(folder, SWT.NONE);
+		item.setText("Form with Embedded List");
+		PlainForm createForm2 = Vidge.createForm(new TestForm3(input));
+		createForm2.addStatusListener(new IStatusListener() {
+
+			@Override
+			public void statusChanged(PropertyStatus status) {
+				treePanel.refresh();
+			}
 		});
+		item.setControl(createForm2.getPane(folder, SWT.NONE));
+	}
+
+	protected void pageOfRegisteredFormWithEmbedded(final FormTestClass input, final TreePanel treePanel) {
+		TabItem item;
+		FormRegistry.registerContextForm(FormContext.TABLE.name(), FormTestClass.class, TestForm.class);
+		item = new TabItem(folder, SWT.NONE);
+		item.setText("  Registered form with embedded");
+		PlainForm createForm = Vidge.createForm(new TestForm(input));
+		createForm.addStatusListener(new IStatusListener() {
+
+			@Override
+			public void statusChanged(PropertyStatus status) {
+				treePanel.refresh();
+			}
+		});
+		item.setControl(createForm.getPane(folder, SWT.NONE));
+	}
+
+	protected void pageOfRawClass(final FormTestClass input, final TreePanel treePanel) {
+		TabItem item = new TabItem(folder, SWT.NONE);
+		item.setText("  Form raw class  ");
+		PlainForm plainForm = new PlainForm(input);
+		plainForm.addStatusListener(new IStatusListener() {
+
+			@Override
+			public void statusChanged(PropertyStatus status) {
+				treePanel.refresh();
+			}
+		});
+		item.setControl(plainForm.getPane(folder, SWT.NONE));
 	}
 
 	private Control createVigetsPanel(Composite composite) {
