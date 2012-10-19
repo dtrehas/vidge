@@ -45,7 +45,8 @@ public class ObjectExplorer<T> extends EntityExplorer {
 	}
 
 	@Override
-	public void createInput() {
+	public Object createInput() {
+		return null;
 	}
 
 	@Override

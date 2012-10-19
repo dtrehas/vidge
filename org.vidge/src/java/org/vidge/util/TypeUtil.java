@@ -157,19 +157,7 @@ public class TypeUtil {
 		return klazz;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static IEntityExplorer getExplorer(Class<?> inputClass, IPropertyExplorer propertyExplorer) {
-		IEntityExplorer entityExplorer = FormRegistry.getEntityExplorer(inputClass);
-		if (entityExplorer == null && propertyExplorer != null) {
-			Object value = propertyExplorer.getValue();
-			if (value == null) {
-				entityExplorer = new ObjectExplorer(instantiateClass(inputClass));
-			} else {
-				entityExplorer = new ObjectExplorer(instantiateClass(getType(propertyExplorer.getPropertyType(), inputClass)));
-			}
-		}
-		return entityExplorer;
-	}
+
 
 	@SuppressWarnings("rawtypes")
 	public static IEntityExplorer getExplorer(Class<?> inputClass, String context, IPropertyExplorer propertyExplorer) {

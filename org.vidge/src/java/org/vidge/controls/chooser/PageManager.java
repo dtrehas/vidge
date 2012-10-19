@@ -49,7 +49,6 @@ public class PageManager {
 	private int totalItemsCount = 0;
 	private ToolBar toolBar;
 	private Label countLabel;
-	private boolean showLastButton = true;
 	private ToolItem itemNext;
 	private ToolItem itemFirst;
 	private ToolItem itemPrev;
@@ -57,7 +56,7 @@ public class PageManager {
 	public PageManager(final Composite parent, int style) {
 		from = FIRST_ELEMENT;
 		count = COUNT_ELEMENT;
-		showLastButton = !((style & NO_LAST_PAGE) == 0);
+		// showLastButton = !((style & NO_LAST_PAGE) == 0);
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 8;
 		layout.marginWidth = 5;
@@ -113,18 +112,16 @@ public class PageManager {
 				getNextPage();
 			}
 		});
-		if (showLastButton) {
-			ToolItem item = new ToolItem(toolBar, SWT.PUSH);
-			item.setImage(VidgeResources.getInstance().getImage(SharedImages.LAST));
-			item.setToolTipText("Last");
-			item.addSelectionListener(new SelectionAdapter() {
+		ToolItem item = new ToolItem(toolBar, SWT.PUSH);
+		item.setImage(VidgeResources.getInstance().getImage(SharedImages.LAST));
+		item.setToolTipText("Last");
+		item.addSelectionListener(new SelectionAdapter() {
 
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					getLastPage();
-				}
-			});
-		}
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				getLastPage();
+			}
+		});
 		countCombo = new Combo(parentPane, SWT.DROP_DOWN);
 		setCountValues(countValues);
 		countCombo.select(0);
@@ -323,10 +320,6 @@ public class PageManager {
 
 	public void clearListeners() {
 		pageListeners.clear();
-	}
-
-	public void setEnabledNext(boolean isWorking) {
-		itemNext.setEnabled(isWorking);
 	}
 
 	public int[] getCountValues() {

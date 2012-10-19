@@ -141,7 +141,7 @@ public class ListPanel<F> {
 
 	private void addItem() {
 		try {
-			addExplorer.explore(klass.newInstance());
+			addExplorer.explore(addExplorer.createInput());
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}

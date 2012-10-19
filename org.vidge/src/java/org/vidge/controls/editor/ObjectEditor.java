@@ -19,6 +19,7 @@ import org.vidge.dialog.ObjectListSelectDialog;
 import org.vidge.dialog.SingleObjectDialog;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IObjectDialog;
+import org.vidge.util.FormContext;
 import org.vidge.util.TypeUtil;
 
 public class ObjectEditor<T> extends ObjectField<T> {
@@ -36,7 +37,7 @@ public class ObjectEditor<T> extends ObjectField<T> {
 		Class<?> propertyClass = controller.getExplorer().getPropertyClass();
 		Type propertyType = TypeUtil.getGenericClass(controller.getExplorer().getPropertyClass(), controller.getExplorer().getPropertyType());
 		if (!propertyClass.equals(propertyType)) {
-			IEntityExplorer explorer = TypeUtil.getExplorer(TypeUtil.getType(propertyType, propertyClass), controller.getExplorer());
+			IEntityExplorer explorer = TypeUtil.getExplorer(TypeUtil.getType(propertyType, propertyClass), FormContext.EDIT.name(), controller.getExplorer());
 			if (List.class.isAssignableFrom(propertyClass) || Map.class.isAssignableFrom(propertyClass) || propertyClass.isArray()) {
 				if (controller.getExplorer().hasHierarchyProvider()) {
 					dialog = new ObjectTreeEditorDialog(controller.getExplorer().getLabel(), controller.getExplorer().getHierarchyProvider());
@@ -49,7 +50,7 @@ public class ObjectEditor<T> extends ObjectField<T> {
 				dialog = new SingleObjectDialog<T>(explorer, controller.getExplorer().getLabel(), null);
 			}
 		} else {
-			IEntityExplorer explorer = TypeUtil.getExplorer(propertyClass, controller.getExplorer());
+			IEntityExplorer explorer = TypeUtil.getExplorer(propertyClass, FormContext.EDIT.name(), controller.getExplorer());
 			if (controller.getExplorer().hasHierarchyProvider()) {
 				dialog = new ObjectTreeEditorDialog(controller.getExplorer().getLabel(), controller.getExplorer().getHierarchyProvider());
 			} else if (controller.getExplorer().hasValidValues()) {

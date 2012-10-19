@@ -9,6 +9,7 @@ import org.vidge.PropertyController;
 import org.vidge.dialog.ListPanel;
 import org.vidge.inface.IChangeListener;
 import org.vidge.inface.IEntityExplorer;
+import org.vidge.util.FormContext;
 import org.vidge.util.TypeUtil;
 
 /**
@@ -29,10 +30,10 @@ public class FieldAdapterList extends AbstractFieldAdapter {
 			Class<?> propertyClass = controller.getExplorer().getPropertyClass();
 			Type propertyType = TypeUtil.getGenericClass(controller.getExplorer().getPropertyClass(), controller.getExplorer().getPropertyType());
 			if (!propertyClass.equals(propertyType)) {
-				IEntityExplorer explorer = TypeUtil.getExplorer(TypeUtil.getType(propertyType, propertyClass), controller.getExplorer());
+				IEntityExplorer explorer = TypeUtil.getExplorer(TypeUtil.getType(propertyType, propertyClass), FormContext.TABLE.name(), controller.getExplorer());
 				listPanel = new ListPanel(parent, explorer, controller.getExplorer());
 			} else {
-				IEntityExplorer explorer = TypeUtil.getExplorer(propertyClass, controller.getExplorer());
+				IEntityExplorer explorer = TypeUtil.getExplorer(propertyClass, FormContext.TABLE.name(), controller.getExplorer());
 				listPanel = new ListPanel(parent, explorer, controller.getExplorer());
 			}
 			listPanel.addChangeListener(new IChangeListener() {
