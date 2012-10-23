@@ -110,4 +110,8 @@ public class PropertyController implements Comparable<PropertyController>, Focus
 	public void inValidate() {
 		plainForm.statusChanged();
 	}
+
+	public void refreshView() {
+		plainForm.refreshView();
+	}
 }

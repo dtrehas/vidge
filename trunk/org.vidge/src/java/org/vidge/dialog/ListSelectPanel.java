@@ -160,4 +160,8 @@ public class ListSelectPanel<F> {
 	public Control getControl() {
 		return section;
 	}
+
+	public void setEnabled(boolean enabled) {
+		table.setEnabled(enabled);
+	}
 }

@@ -26,7 +26,6 @@ public class FieldAdapterObjectEditor extends AbstractFieldAdapter {
 
 	@Override
 	public void setEnabled(boolean enabled) {
-		super.setEnabled(enabled);
 		editor.setEnabled(enabled);
 	}
 

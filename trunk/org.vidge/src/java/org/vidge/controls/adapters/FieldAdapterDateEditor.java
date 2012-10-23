@@ -36,6 +36,11 @@ public class FieldAdapterDateEditor extends AbstractFieldAdapter {
 	}
 
 	@Override
+	public void setEnabled(boolean enabled) {
+		editor.setEnabled(enabled);
+	}
+
+	@Override
 	public Control getControl() {
 		return editor;
 	}

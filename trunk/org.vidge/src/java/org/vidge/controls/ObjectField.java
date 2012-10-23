@@ -6,6 +6,7 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.HelpListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
@@ -24,7 +25,6 @@ import org.vidge.inface.IObjectDialog;
 
 public abstract class ObjectField<T> extends Composite {
 
-	private static final String OBJECT_FIELD_CHANGED = "ObjectField Changed";
 	protected Text text;
 	protected CustomButton button;
 	protected CustomButton clearButton;
@@ -58,23 +58,35 @@ public abstract class ObjectField<T> extends Composite {
 
 	protected void createContent(int style) {
 		text = new Text(this, SWT.NONE);
-		text.setEditable(false);
-		text.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 		if ((style & ALLOW_KEYS) == 0) {
 			text.addKeyListener(new KeyListener() {
 
 				public void keyPressed(KeyEvent e) {
-					if (e.stateMask == 262144 && e.keyCode == 32) {
-						e.doit = false;
-						showDialog();
-					}
+					e.doit = false;
 				}
 
 				public void keyReleased(KeyEvent e) {
+					showDialog();
 					keyPressedInText();
 				}
 			});
 		}
+		text.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseUp(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+				showDialog();
+			}
+
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				showDialog();
+			}
+		});
 		text.setLayoutData(new GridData(GridData.FILL_BOTH));
 	}
 
@@ -108,7 +120,6 @@ public abstract class ObjectField<T> extends Composite {
 
 	@Override
 	public void setEnabled(boolean enabled) {
-		super.setEnabled(enabled);
 		text.setEnabled(enabled);
 		button.setEnabled(enabled);
 		clearButton.setEnabled(enabled);

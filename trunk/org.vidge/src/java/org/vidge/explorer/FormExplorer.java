@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.langcom.locale.LocalizedString;
-import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IForm;
 import org.vidge.inface.IFormDataProvider;
 import org.vidge.inface.IFormFactory;
@@ -115,7 +114,7 @@ public class FormExplorer<T> extends EntityExplorer {
 	@Override
 	public Object createInput() {
 		try {
-			Object newInstance = newInstance(getInput.getReturnType());
+			Object newInstance = newInstance(getInput.getReturnType(), getContext());
 			form.setInput((T) newInstance);
 			return newInstance;
 		} catch (Exception e) {
@@ -125,19 +124,22 @@ public class FormExplorer<T> extends EntityExplorer {
 	}
 
 	@Override
-	public Class<?> getInputClass() {
-		return getInput.getReturnType();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public IEntityExplorer copy() {
+	public boolean removeInput() {
 		try {
-			return new FormExplorer<T>(form.getClass().newInstance());
+			boolean result = removeInstance(getInput.getReturnType(), getContext());
+			if (result) {
+				form.setInput(null);
+			}
+			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return false;
+	}
+
+	@Override
+	public Class<?> getInputClass() {
+		return getInput.getReturnType();
 	}
 
 	@Override
@@ -145,7 +147,6 @@ public class FormExplorer<T> extends EntityExplorer {
 		if (IFormInputChangeListener.class.isAssignableFrom(form.getClass())) {
 			value = ((IFormInputChangeListener) form).doInputChanged(value, action, attribute);
 		}
-		parentChanged(value, action, attribute);
 		return value;
 	}
 
@@ -153,7 +154,7 @@ public class FormExplorer<T> extends EntityExplorer {
 	@Override
 	public List<T> getData() {
 		if (IFormDataProvider.class.isAssignableFrom(form.getClass())) {
-			return ((IFormDataProvider) form).getData();
+			return ((IFormDataProvider<T>) form).getData();
 		}
 		return null;
 	}
@@ -187,10 +188,32 @@ public class FormExplorer<T> extends EntityExplorer {
 	}
 
 	@Override
-	public Object newInstance(Class<?> inputClass) {
+	public Object newInstance(Class<?> inputClass, Object context) {
 		if (IFormFactory.class.isAssignableFrom(form.getClass())) {
-			return ((IFormFactory) form).newInstance(inputClass);
+			return ((IFormFactory) form).newInstance(inputClass, context);
 		}
-		return super.newInstance(inputClass);
+		return super.newInstance(inputClass, context);
+	}
+
+	@Override
+	public boolean removeInstance(Class<?> inputClass, Object context) {
+		if (IFormFactory.class.isAssignableFrom(form.getClass())) {
+			return ((IFormFactory) form).removeInstance(inputClass, context);
+		}
+		return super.removeInstance(inputClass, context);
+	}
+
+	@Override
+	public void instanceApply() {
+		if (IFormFactory.class.isAssignableFrom(form.getClass())) {
+			((IFormFactory) form).instanceApply();
+		}
+	}
+
+	@Override
+	public void instanceCancel() {
+		if (IFormFactory.class.isAssignableFrom(form.getClass())) {
+			((IFormFactory) form).instanceCancel();
+		}
 	}
 }

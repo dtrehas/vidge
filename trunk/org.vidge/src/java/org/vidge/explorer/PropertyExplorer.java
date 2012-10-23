@@ -81,6 +81,9 @@ public class PropertyExplorer extends AbstractPropertyExplorer {
 
 	@Override
 	public Object getValueInt() {
+		if (((IForm) source).getInput() == null) {
+			return null;
+		}
 		return invokeInternal(getter);
 	}
 

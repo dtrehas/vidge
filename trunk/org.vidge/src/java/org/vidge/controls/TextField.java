@@ -50,6 +50,8 @@ public class TextField extends Composite {
 	@Override
 	public void setEnabled(boolean enabled) {
 		text.setEnabled(enabled);
+		if (clearButton != null)
+			clearButton.setEnabled(enabled);
 	}
 
 	private void buildButtons() {

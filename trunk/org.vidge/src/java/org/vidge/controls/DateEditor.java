@@ -22,8 +22,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.vidge.VidgeResources;
 import org.vidge.SharedImages;
+import org.vidge.VidgeResources;
 import org.vidge.controls.calendar.CalendarDialog;
 
 public class DateEditor extends Composite {
@@ -61,6 +61,13 @@ public class DateEditor extends Composite {
 		makeCalendarButton(this);
 		makeClearButton(this);
 		setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		text.setEnabled(enabled);
+		calendarButton.setEnabled(enabled);
+		clearButton.setEnabled(enabled);
 	}
 
 	protected void showDialog() {

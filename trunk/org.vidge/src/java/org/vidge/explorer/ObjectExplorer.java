@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.langcom.locale.LocalizedString;
-import org.vidge.inface.IEntityExplorer;
 
 public class ObjectExplorer<T> extends EntityExplorer {
 
@@ -42,22 +41,5 @@ public class ObjectExplorer<T> extends EntityExplorer {
 			return ((LocalizedString) input).getDefaultLocalString();
 		}
 		return super.getLabel();
-	}
-
-	@Override
-	public Object createInput() {
-		return null;
-	}
-
-	@Override
-	public IEntityExplorer copy() {
-		try {
-			return new ObjectExplorer<T>(input.getClass().newInstance());
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 }

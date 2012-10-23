@@ -47,6 +47,9 @@ public abstract class AbstractFieldAdapter {
 
 	public void refreshControl() {
 		inValidate();
+		if (!isEnabled() || explorer.getEntityExplorer().getInput() == null) {
+			return;
+		}
 		setVisualValue(validator.getMarshalledValue());
 	}
 
@@ -80,5 +83,13 @@ public abstract class AbstractFieldAdapter {
 	}
 
 	public void setToolTipText(String string) {
+	}
+
+	public IValidator getValidator() {
+		return validator;
+	}
+
+	public IPropertyExplorer getExplorer() {
+		return explorer;
 	}
 }

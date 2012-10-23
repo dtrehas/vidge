@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.langcom.locale.LocalizedStringPart;
 import org.vidge.explorer.FormExplorer;
+import org.vidge.explorer.ObjectExplorer;
 import org.vidge.form.LocaleForm;
 import org.vidge.form.LocalizedStringPartForm2;
 import org.vidge.inface.IEntityExplorer;
@@ -72,11 +73,10 @@ public class FormRegistry {
 			result = searchSimilar(klass);
 		}
 		if (result == null) {
-			// / throw new VidgeException("***No Forms was not registered for "+klass);
-			// result = new ObjectExplorer(klass);
-			return null;
+			result = new ObjectExplorer(klass);
+			// return null;
 		}
-		return result.copy();
+		return result;
 	}
 
 	private static IEntityExplorer searchSimilar(Class<?> klass) {
