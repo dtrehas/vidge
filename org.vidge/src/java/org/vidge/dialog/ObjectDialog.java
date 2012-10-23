@@ -60,7 +60,6 @@ public class ObjectDialog<F> extends TitleAreaDialog implements IObjectDialog<F>
 	private ArrayList selectionObjects = new ArrayList();
 	private static int SELECT_ALL = IDialogConstants.CLIENT_ID << 2;
 	private boolean selectAllItems = true;
-	private boolean isNew = false;
 
 	public ObjectDialog(Shell shell, IForm<F> objectForm, String title, String message, List<?> objectList, Point size) {
 		this(shell, new FormExplorer(objectForm), title, message, size);
@@ -99,7 +98,6 @@ public class ObjectDialog<F> extends TitleAreaDialog implements IObjectDialog<F>
 		if (explorer.getInput() == null) {
 			explorer.createInput();
 			selection = (F) explorer.getInput();
-			isNew = true;
 		}
 	}
 
@@ -160,13 +158,13 @@ public class ObjectDialog<F> extends TitleAreaDialog implements IObjectDialog<F>
 	protected void buttonPressed(int buttonId) {
 		if (IDialogConstants.OK_ID == buttonId) {
 			if (!keyEnterPressedInTextArea()) {
+				explorer.instanceApply();
 				okPressed();
 			}
 		} else if (IDialogConstants.CANCEL_ID == buttonId) {
+			explorer.instanceCancel();
+			explorer.setInput(null);
 			cancelPressed();
-			if (isNew) {
-				explorer.setInput(null);
-			}
 		} else if (IDialogConstants.CLIENT_ID == buttonId) {
 			filter.removeFiltering();
 		} else if (SELECT_ALL == buttonId) {

@@ -85,7 +85,7 @@ public class PlainForm {
 		inValidate();
 	}
 
-	protected void refreshView() {
+	public void refreshView() {
 		for (PropertyController controller : controllerList) {
 			AbstractFieldAdapter fieldAdapter = controller.getFieldAdapter();
 			if (fieldAdapter != null)
@@ -316,5 +316,13 @@ public class PlainForm {
 
 	public boolean isValid() {
 		return currentStatus.isValid();
+	}
+
+	public void clear() {
+		for (int a = 0; a < controllerList.size(); a++) {
+			PropertyController controller = controllerList.get(a);
+			AbstractFieldAdapter fieldAdapter = controller.getFieldAdapter();
+			fieldAdapter.clear();
+		}
 	}
 }

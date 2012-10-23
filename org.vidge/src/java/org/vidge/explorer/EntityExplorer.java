@@ -9,19 +9,15 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.vidge.inface.IEntityExplorer;
-import org.vidge.inface.IFormDataProvider;
-import org.vidge.inface.IFormFactory;
-import org.vidge.inface.IFormInputChangeListener;
 import org.vidge.inface.IPropertyExplorer;
 import org.vidge.inface.ValueAction;
 
-@SuppressWarnings("rawtypes")
-public abstract class EntityExplorer implements IEntityExplorer, IFormInputChangeListener, IFormDataProvider, IFormFactory {
+public abstract class EntityExplorer implements IEntityExplorer {
 
 	private List<IPropertyExplorer> attributes = new ArrayList<IPropertyExplorer>();
 	private Map<String, IPropertyExplorer> attributesMap = new HashMap<String, IPropertyExplorer>();
-	private List<IEntityExplorer> childList = new ArrayList<IEntityExplorer>();
 	protected Object input;
+	private Object context;
 
 	public List<IPropertyExplorer> getPropertyList() {
 		return attributes;
@@ -41,8 +37,8 @@ public abstract class EntityExplorer implements IEntityExplorer, IFormInputChang
 	}
 
 	@Override
-	public void addChild(IEntityExplorer child) {
-		childList.add(child);
+	public void setContext(Object context) {
+		this.context = context;
 	}
 
 	@Override
@@ -84,14 +80,7 @@ public abstract class EntityExplorer implements IEntityExplorer, IFormInputChang
 
 	@Override
 	public Object doInputChanged(Object value, ValueAction action, String attribute) {
-		parentChanged(value, action, attribute);
 		return value;
-	}
-
-	protected void parentChanged(Object value, ValueAction action, String attribute) {
-		for (IEntityExplorer entityExplorer : childList) {
-			entityExplorer.doInputChanged(value, action, attribute);
-		}
 	}
 
 	@Override
@@ -156,12 +145,40 @@ public abstract class EntityExplorer implements IEntityExplorer, IFormInputChang
 	}
 
 	@Override
-	public Object newInstance(Class<?> inputClass) {
+	public Object newInstance(Class<?> inputClass, Object context) {
 		try {
 			return inputClass.newInstance();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public boolean removeInstance(Class<?> inputClass, Object context) {
+		clear();
+		return true;
+	}
+
+	public Object getContext() {
+		return context;
+	};
+
+	@Override
+	public Object createInput() {
+		return null;
+	}
+
+	@Override
+	public boolean removeInput() {
+		return true;
+	}
+
+	@Override
+	public void instanceApply() {
+	}
+
+	@Override
+	public void instanceCancel() {
 	}
 }

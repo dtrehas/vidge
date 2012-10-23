@@ -38,6 +38,7 @@ public class ObjectEditor<T> extends ObjectField<T> {
 		Type propertyType = TypeUtil.getGenericClass(controller.getExplorer().getPropertyClass(), controller.getExplorer().getPropertyType());
 		if (!propertyClass.equals(propertyType)) {
 			IEntityExplorer explorer = TypeUtil.getExplorer(TypeUtil.getType(propertyType, propertyClass), FormContext.EDIT.name(), controller.getExplorer());
+			explorer.setContext(controller.getExplorer().getEntityExplorer().getInput());
 			if (List.class.isAssignableFrom(propertyClass) || Map.class.isAssignableFrom(propertyClass) || propertyClass.isArray()) {
 				if (controller.getExplorer().hasHierarchyProvider()) {
 					dialog = new ObjectTreeEditorDialog(controller.getExplorer().getLabel(), controller.getExplorer().getHierarchyProvider());
@@ -51,6 +52,7 @@ public class ObjectEditor<T> extends ObjectField<T> {
 			}
 		} else {
 			IEntityExplorer explorer = TypeUtil.getExplorer(propertyClass, FormContext.EDIT.name(), controller.getExplorer());
+			explorer.setContext(controller.getExplorer().getEntityExplorer().getInput());
 			if (controller.getExplorer().hasHierarchyProvider()) {
 				dialog = new ObjectTreeEditorDialog(controller.getExplorer().getLabel(), controller.getExplorer().getHierarchyProvider());
 			} else if (controller.getExplorer().hasValidValues()) {

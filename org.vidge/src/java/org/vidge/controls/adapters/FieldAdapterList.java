@@ -52,6 +52,11 @@ public class FieldAdapterList extends AbstractFieldAdapter {
 	}
 
 	@Override
+	public void setEnabled(boolean enabled) {
+		listPanel.setEnabled(enabled);
+	}
+
+	@Override
 	public Control getControl() {
 		return listPanel.getControl();
 	}

@@ -50,7 +50,9 @@ public class ListPanel<F> {
 		setValue(propertyExplorer);
 		klass = (Class<F>) TypeUtil.getGenericClass(entityExplorer.getInputClass(), propertyExplorer.getPropertyType());
 		addExplorer = TypeUtil.getExplorer(klass, FormContext.CREATE.name(), propertyExplorer);
+		addExplorer.setContext(propertyExplorer.getEntityExplorer().getInput());
 		editExplorer = TypeUtil.getExplorer(klass, FormContext.EDIT.name(), propertyExplorer);
+		editExplorer.setContext(propertyExplorer.getEntityExplorer().getInput());
 		propertyName = propertyExplorer.getPropertyName();
 		section = new Section(parent, Section.TITLE_BAR);
 		section.setTextClient(getClient(section));
@@ -194,5 +196,9 @@ public class ListPanel<F> {
 
 	public List<F> getSelection() {
 		return selection;
+	}
+
+	public void setEnabled(boolean enabled) {
+		table.setEnabled(enabled);
 	}
 }

@@ -7,13 +7,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
 @SuppressWarnings("rawtypes")
-public interface IEntityExplorer extends IFormInputChangeListener, IFormDataProvider {
+public interface IEntityExplorer extends IFormInputChangeListener, IFormDataProvider, IFormFactory {
 
 	public void explore(Object input);
-
-	public IEntityExplorer copy();
-
-	public void addChild(IEntityExplorer child);
 
 	public void clear();
 
@@ -30,8 +26,6 @@ public interface IEntityExplorer extends IFormInputChangeListener, IFormDataProv
 	public Object getInput();
 
 	public Class<?> getInputClass();
-
-	public Object createInput();
 
 	public String getLabel();
 
@@ -55,5 +49,9 @@ public interface IEntityExplorer extends IFormInputChangeListener, IFormDataProv
 
 	boolean refresh();
 
-	public Object newInstance(Class<?> inputClass);
+	public void setContext(Object input);
+
+	public Object createInput();
+
+	public boolean removeInput();
 }

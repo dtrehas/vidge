@@ -51,6 +51,11 @@ public class FieldAdapterText extends AbstractFieldAdapter implements KeyListene
 		return text.getText();
 	}
 
+	@Override
+	public void setEnabled(boolean enabled) {
+		text.setEnabled(enabled);
+	}
+
 	public void setVisualValue(Object newValue) {
 		text.setText(newValue == null ? "" : newValue.toString()); //$NON-NLS-1$
 	}
