@@ -181,4 +181,13 @@ public abstract class EntityExplorer implements IEntityExplorer {
 	@Override
 	public void instanceCancel() {
 	}
+
+	@Override
+	public void checkInput() {
+	}
+
+	@Override
+	public Object checkInstance(Object context) {
+		return null;
+	}
 }
