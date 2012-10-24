@@ -54,4 +54,6 @@ public interface IEntityExplorer extends IFormInputChangeListener, IFormDataProv
 	public Object createInput();
 
 	public boolean removeInput();
+
+	public void checkInput();
 }

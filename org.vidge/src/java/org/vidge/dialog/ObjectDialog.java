@@ -98,6 +98,8 @@ public class ObjectDialog<F> extends TitleAreaDialog implements IObjectDialog<F>
 		if (explorer.getInput() == null) {
 			explorer.createInput();
 			selection = (F) explorer.getInput();
+		} else {
+			explorer.checkInput();
 		}
 	}
 

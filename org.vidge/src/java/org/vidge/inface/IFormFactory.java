@@ -9,4 +9,6 @@ public interface IFormFactory {
 	public void instanceApply();
 
 	public void instanceCancel();
+
+	public Object checkInstance(Object context);
 }

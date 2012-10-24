@@ -7,6 +7,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.Section;
 import org.vidge.FormRegistry;
 import org.vidge.PlainForm;
@@ -34,7 +35,7 @@ public class FieldAdapterForm extends AbstractFieldAdapter {
 
 	@Override
 	protected void createControl(Composite parent) {
-		section = new Section(parent, Section.TITLE_BAR | Section.CLIENT_INDENT | Section.TWISTIE);
+		section = new Section(parent, Section.TITLE_BAR | Section.CLIENT_INDENT | Section.TWISTIE | Section.DESCRIPTION);
 		section.setLayout(new GridLayout());
 		// section.setBackground(PlatformUI.getWorkbench().getDisplay().getSystemColor(SWT.COLOR_GRAY));
 		// section.setBackgroundMode(SWT.INHERIT_FORCE);
@@ -45,10 +46,10 @@ public class FieldAdapterForm extends AbstractFieldAdapter {
 		pane = form.getPane(section, SWT.NONE);
 		if (explorer.getValue() == null) {
 			form.setEnabled(false);
-			// entityExplorer.createInput();
-			// explorer.setValue(entityExplorer.getInput());
 		} else {
-			// entityExplorer.setInput(explorer.getValue());
+			entityExplorer.checkInput();
+			form.inValidate();
+			form.refreshView();
 		}
 		section.setClient(pane);
 	}
@@ -57,10 +58,17 @@ public class FieldAdapterForm extends AbstractFieldAdapter {
 		Composite composite = new Composite(section, SWT.NONE);
 		section.setTextClient(composite);
 		section.setText(name);
-		GridLayout layout = new GridLayout(2, false);
+		GridLayout layout = new GridLayout(3, false);
 		layout.marginRight = 2;
 		composite.setLayout(layout);
 		composite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		Label label = new Label(composite, SWT.NONE);
+		label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		if (explorer.getValue() == null) {
+			label.setText("                                 ");
+		} else {
+			label.setText(explorer.getValue().toString());
+		}
 		CustomButton button = new CustomButton(composite, VidgeResources.getInstance().getImage(SharedImages.ACTION_PLUS2), "Create");
 		button.setLayoutData(new GridData(GridData.END));
 		button.addSelectionListener(new SelectionAdapter() {

@@ -18,6 +18,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.langcom.locale.LocalizedString;
 import org.vidge.PropertyController;
 import org.vidge.SharedImages;
 import org.vidge.VidgeResources;
@@ -62,11 +63,21 @@ public abstract class ObjectField<T> extends Composite {
 			text.addKeyListener(new KeyListener() {
 
 				public void keyPressed(KeyEvent e) {
-					e.doit = false;
+					if (controller.getExplorer().getPropertyClass() == LocalizedString.class) {
+						if (e.stateMask == 262144 && e.keyCode == 32) {
+							e.doit = false;
+							showDialog();
+						}
+					} else {
+						e.doit = false;
+					}
 				}
 
 				public void keyReleased(KeyEvent e) {
-					showDialog();
+					if (controller.getExplorer().getPropertyClass() == LocalizedString.class) {
+					} else {
+						showDialog();
+					}
 					keyPressedInText();
 				}
 			});
@@ -79,7 +90,6 @@ public abstract class ObjectField<T> extends Composite {
 
 			@Override
 			public void mouseDown(MouseEvent e) {
-				showDialog();
 			}
 
 			@Override

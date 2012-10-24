@@ -216,4 +216,13 @@ public class FormExplorer<T> extends EntityExplorer {
 			((IFormFactory) form).instanceCancel();
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void checkInput() {
+		if (IFormFactory.class.isAssignableFrom(form.getClass())) {
+			Object newInstance = ((IFormFactory) form).checkInstance(getContext());
+			form.setInput((T) newInstance);
+		}
+	}
 }
