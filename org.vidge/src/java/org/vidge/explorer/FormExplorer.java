@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.langcom.locale.LocalizedString;
+import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IForm;
 import org.vidge.inface.IFormDataProvider;
 import org.vidge.inface.IFormFactory;
@@ -86,6 +87,17 @@ public class FormExplorer<T> extends EntityExplorer {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public IEntityExplorer copy() {
+		try {
+			return new FormExplorer<T>(form.getClass().newInstance());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public IForm<T> getForm() {

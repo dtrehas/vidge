@@ -72,9 +72,10 @@ public class FormRegistry {
 			result = searchSimilar(klass);
 		}
 		if (result == null) {
+			return null;
 			// result = new ObjectExplorer(klass);
 		}
-		return result;
+		return result.copy();
 	}
 
 	private static IEntityExplorer searchSimilar(Class<?> klass) {
