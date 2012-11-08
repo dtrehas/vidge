@@ -70,17 +70,19 @@ public abstract class AbstractPropertyExplorer implements IPropertyExplorer {
 
 	@Override
 	public void flush() {
-		if (oldValue == null) {
-			if (mockValue == null) {
-			} else {
-				setValueInt(mockValue);
-			}
-		} else {
-			if (mockValue == null) {
-				setValueInt(mockValue);
-			} else {
-				if (!mockValue.equals(oldValue)) {
+		if (flushable) {
+			if (oldValue == null) {
+				if (mockValue == null) {
+				} else {
 					setValueInt(mockValue);
+				}
+			} else {
+				if (mockValue == null) {
+					setValueInt(mockValue);
+				} else {
+					if (!mockValue.equals(oldValue)) {
+						setValueInt(mockValue);
+					}
 				}
 			}
 		}

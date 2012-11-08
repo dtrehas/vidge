@@ -13,6 +13,8 @@ public interface IEntityExplorer extends IFormInputChangeListener, IFormDataProv
 
 	public void clear();
 
+	public IEntityExplorer copy();
+
 	public List<IPropertyExplorer> getPropertyList();
 
 	public Image getImage(Object element, int index);

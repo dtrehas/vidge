@@ -37,6 +37,11 @@ public abstract class EntityExplorer implements IEntityExplorer {
 	}
 
 	@Override
+	public IEntityExplorer copy() {
+		return this;
+	}
+
+	@Override
 	public void setContext(Object context) {
 		this.context = context;
 	}
