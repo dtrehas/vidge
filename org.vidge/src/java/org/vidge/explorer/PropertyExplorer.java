@@ -16,6 +16,7 @@ import org.vidge.form.validator.ValidatorRegistry;
 import org.vidge.inface.IForm;
 import org.vidge.inface.IObjectWizard;
 import org.vidge.inface.IPropertyExplorer;
+import org.vidge.util.APropertyContext;
 import org.vidge.util.StringUtil;
 import org.vidge.util.TypeUtil;
 import org.vidge.util.VisualControlType;
@@ -46,6 +47,7 @@ public class PropertyExplorer extends AbstractPropertyExplorer {
 	private Method setChecked;
 	private Method getChecked;
 	protected VisualProperty visualProperty;
+	private final APropertyContext context;
 
 	@SuppressWarnings("nls")
 	public PropertyExplorer(Object obj, Method method, boolean allowChild) {
@@ -53,6 +55,7 @@ public class PropertyExplorer extends AbstractPropertyExplorer {
 		source = obj;
 		getter = method;
 		visualProperty = method.getAnnotation(VisualProperty.class);
+		context = method.getAnnotation(APropertyContext.class);
 		propertyName = getter.getName().substring(3);
 		getValidValues = exploreMethod(GET + propertyName + VALID_VALUES);
 		getValidator = exploreMethod(GET + propertyName + VALIDATOR2);
@@ -291,5 +294,9 @@ public class PropertyExplorer extends AbstractPropertyExplorer {
 	@Override
 	public boolean isEmbedded() {
 		return visualProperty.embedded();
+	}
+
+	public APropertyContext getContext() {
+		return context;
 	}
 }

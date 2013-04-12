@@ -82,6 +82,8 @@ public class FieldAdapterFactory {
 				return new FieldAdapterFolderEditor(controller, parent);
 			case OBJECT_WIZARD:
 				return new FieldAdapterObjectWizard(controller, parent);
+			case TREE:
+				return new FieldAdapterObjectWizard(controller, parent);
 			default:
 				return new FieldAdapterLabel(controller, parent);
 		}

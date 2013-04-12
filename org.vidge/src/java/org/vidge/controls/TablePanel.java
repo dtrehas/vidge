@@ -32,6 +32,7 @@ import org.vidge.explorer.FormExplorer;
 import org.vidge.inface.IChangeListener;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IForm;
+import org.vidge.inface.IFormInputChangeListener;
 import org.vidge.inface.IObjectDialog;
 import org.vidge.inface.ValueAction;
 import org.vidge.util.FormContext;
@@ -47,31 +48,24 @@ public class TablePanel<T> {
 	private String title;
 	private int style = Vidge.ALLACTIONS;
 	private ArrayList<IChangeListener> listenerList = new ArrayList<IChangeListener>();
+	private ArrayList<IFormInputChangeListener> changeListenerList = new ArrayList<IFormInputChangeListener>();
 	private Class<IForm<T>> formClass;
 
-	public TablePanel(Class<T> objClass, List<T> listIn, int style) {
-		this(objClass, listIn);
-		this.style = style;
+	public TablePanel(Class<T> objClass, List<T> listIn) {
+		this(objClass, listIn, Vidge.ALLACTIONS);
 	}
 
 	public TablePanel(Composite parent, Class<T> objClass, List<T> objectList, int style) {
-		this(parent, objClass, objectList);
-		this.style = style;
-	}
-
-	public TablePanel(Class<T> objClass, List<T> listIn) {
-		this.objClass = objClass;
-		this.objectList = (listIn == null ? new ArrayList<T>() : listIn);
-		expIn = FormRegistry.getEntityExplorer(FormContext.TABLE.name(), objClass);
+		this(objClass, objectList, style);
 	}
 
 	public TablePanel(Composite parent, Class<T> objClass, List<T> objectList) {
-		this(objClass, objectList);
+		this(objClass, objectList, Vidge.ALLACTIONS);
 		createViewer(parent);
 	}
 
 	public TablePanel(Composite parent, Class<T> objClass, List<T> objectList, String title) {
-		this(objClass, objectList);
+		this(objClass, objectList, Vidge.ALLACTIONS);
 		this.title = title;
 		createViewer(parent);
 	}
@@ -83,13 +77,30 @@ public class TablePanel<T> {
 		expIn = new FormExplorer<T>(formClass);
 	}
 
+	public TablePanel(Class<T> objClass, List<T> listIn, int style) {
+		this.objClass = objClass;
+		this.style = style;
+		this.objectList = (listIn == null ? new ArrayList<T>() : listIn);
+		expIn = FormRegistry.getEntityExplorer(FormContext.TABLE.name(), objClass);
+	}
+
 	public void addChangeListener(IChangeListener listener) {
 		listenerList.add(listener);
+	}
+
+	public void addFormChangeListener(IFormInputChangeListener listener) {
+		changeListenerList.add(listener);
 	}
 
 	private void fireTableChanged() {
 		for (IChangeListener listener : listenerList) {
 			listener.changed();
+		}
+	}
+
+	private void fireFormChanged(Object value, ValueAction action, String attribute) {
+		for (IFormInputChangeListener listener : changeListenerList) {
+			listener.doInputChanged(value, action, attribute);
 		}
 	}
 
@@ -156,6 +167,11 @@ public class TablePanel<T> {
 
 	public ToolBar getClient() {
 		ToolBar bar = new ToolBar(section, SWT.FLAT);
+		createDefaultActions(bar);
+		return bar;
+	}
+
+	private void createDefaultActions(ToolBar bar) {
 		if (expIn.create()) {
 			if ((style & Vidge.ALLACTIONS) != 0 || (style & Vidge.CREATE) != 0) {
 				ToolItem item = new ToolItem(bar, SWT.PUSH);
@@ -212,7 +228,6 @@ public class TablePanel<T> {
 				});
 			}
 		}
-		return bar;
 	}
 
 	public void addItem() {
@@ -220,8 +235,9 @@ public class TablePanel<T> {
 		IObjectDialog<T> dialog = new SingleObjectDialog<T>(entityExplorer, "Add Item", null);
 		if (dialog.open() == Window.OK) {
 			entityExplorer.doInputChanged(dialog.getSelection(), ValueAction.SAVE, null);
-			refresh();
 			fireTableChanged();
+			fireFormChanged(dialog.getSelection(), ValueAction.SAVE, null);
+			refresh();
 		}
 	}
 
@@ -236,8 +252,9 @@ public class TablePanel<T> {
 			IObjectDialog<T> dialog = new SingleObjectDialog<T>(entityExplorer, "Edit Item", null);
 			if (dialog.open() == Window.OK) {
 				selection = (T) entityExplorer.doInputChanged(dialog.getSelection(), ValueAction.UPDATE, null);
-				refresh();
 				fireTableChanged();
+				fireFormChanged(dialog.getSelection(), ValueAction.UPDATE, null);
+				refresh();
 			}
 		}
 	}
@@ -251,8 +268,9 @@ public class TablePanel<T> {
 			if (MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Remove Item", "Do you really want to remove This item ?")) { //$NON-NLS-1$
 				IEntityExplorer entityExplorer = FormRegistry.getEntityExplorer(FormContext.EDIT.name(), objClass);
 				selection = (T) entityExplorer.doInputChanged(selection, ValueAction.DELETE, null);
-				refresh();
 				fireTableChanged();
+				fireFormChanged(selection, ValueAction.DELETE, null);
+				refresh();
 			}
 		}
 	}
@@ -262,6 +280,8 @@ public class TablePanel<T> {
 		objectList = expIn.getData();
 		if (objectList != null) {
 			vtable.setInput(objectList);
+		} else {
+			vtable.refresh();
 		}
 	}
 
@@ -312,6 +332,7 @@ public class TablePanel<T> {
 
 	public void setActions(final IAction... actions) {
 		ToolBar bar = new ToolBar(section, SWT.FLAT);
+		createDefaultActions(bar);
 		for (final IAction action : actions) {
 			ToolItem item = new ToolItem(bar, SWT.PUSH);
 			if (action.getText() != null)
@@ -345,5 +366,9 @@ public class TablePanel<T> {
 
 	public void setCountValues(int[] countValues) {
 		vtable.getPageManager().setCountValues(countValues);
+	}
+
+	public IEntityExplorer getEntityExplorer() {
+		return expIn;
 	}
 }

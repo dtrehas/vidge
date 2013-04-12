@@ -31,7 +31,7 @@ public class ObjectTreeEditorDialog<T> extends AbstractObjectDialog<T> {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		setTitle(hierarchyProvider.getTitle());
+		setTitle(hierarchyProvider.getTitle() == null ? "Tree" : hierarchyProvider.getTitle());
 		setMessage(hierarchyProvider.getMessage());
 		if (hierarchyProvider != null) {
 			int style = SWT.VIRTUAL | SWT.SINGLE;

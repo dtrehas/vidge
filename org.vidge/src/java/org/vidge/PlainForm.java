@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.vidge.controls.adapters.AbstractFieldAdapter;
+import org.vidge.controls.adapters.FieldAdapterList;
 import org.vidge.explorer.FormExplorer;
 import org.vidge.explorer.ObjectExplorer;
 import org.vidge.inface.IEntityExplorer;
@@ -111,7 +112,12 @@ public class PlainForm {
 						if (formToolkit != null) {
 							formToolkit.adapt(valueControl, !readOnly, !readOnly);
 						}
-						GridData layoutData = new GridData(GridData.FILL_HORIZONTAL);
+						GridData layoutData = null;
+						if (controller.getFieldAdapter().getClass().equals(FieldAdapterList.class)) {
+							layoutData = new GridData(GridData.FILL_BOTH);
+						} else {
+							layoutData = new GridData(GridData.FILL_HORIZONTAL);
+						}
 						layoutData.horizontalSpan = 2;
 						valueControl.setLayoutData(layoutData);
 					} else {

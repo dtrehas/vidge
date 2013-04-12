@@ -84,4 +84,8 @@ public class VColumn<T> {
 	public String getFilterMask() {
 		return filterMask;
 	}
+
+	public IPropertyExplorer getExplorer() {
+		return explorer;
+	}
 }
