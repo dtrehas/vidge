@@ -52,6 +52,7 @@ public abstract class EntityExplorer implements IEntityExplorer {
 		setInput(input);
 	}
 
+	@Override
 	public Image getImage(Object element, int columnIndex) {
 		if (columnIndex == 0) {
 			return null;
@@ -62,10 +63,12 @@ public abstract class EntityExplorer implements IEntityExplorer {
 		return getPropertyList().get(columnIndex - 1).getImage(element);
 	}
 
+	@Override
 	public Color getBackground(Object element) {
 		return null;
 	}
 
+	@Override
 	public Color getForeground(Object element) {
 		return null;
 	}
@@ -75,10 +78,12 @@ public abstract class EntityExplorer implements IEntityExplorer {
 		return input.getClass();
 	}
 
+	@Override
 	public Object getInput() {
 		return input;
 	}
 
+	@Override
 	public void setInput(Object input) {
 		this.input = input;
 	}

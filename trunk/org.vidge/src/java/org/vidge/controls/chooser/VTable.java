@@ -38,6 +38,8 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.PlatformUI;
 import org.vidge.FormRegistry;
 import org.vidge.SharedImages;
+import org.vidge.Vidge;
+import org.vidge.VidgeException;
 import org.vidge.VidgeResources;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IPropertyExplorer;
@@ -48,10 +50,10 @@ public class VTable<T> extends Composite {
 
 	private static final int _50 = 90;
 	private static final int _40 = 40;
-	public static final int NO_NUM_COLUMN = SWT.APPLICATION_MODAL << 12;
-	public static final int PAGES = SWT.APPLICATION_MODAL << 14;
-	public static final int NO_LINES = SWT.APPLICATION_MODAL << 15;
-	public static final int NO_HEADER = SWT.APPLICATION_MODAL << 16;
+	public static final int NO_NUM_COLUMN = Vidge.ALLACTIONS << 8;
+	public static final int PAGES = Vidge.ALLACTIONS << 12;
+	public static final int NO_LINES = Vidge.ALLACTIONS << 10;
+	public static final int NO_HEADER = Vidge.ALLACTIONS << 11;
 	protected Table table;
 	protected List<T> objectList = new ArrayList<T>();
 	protected List<T> visibleList = new ArrayList<T>();
@@ -148,6 +150,7 @@ public class VTable<T> extends Composite {
 				tc.setText(StringUtil.Num);
 				continue;
 			}
+			tc.setData(tColumn.getExplorer());
 			tc.setText(tColumn.explorer.getLabel());
 			tc.setToolTipText(tColumn.explorer.getLabel());
 			if ((a > 0) || isNumColumn) {
@@ -221,10 +224,9 @@ public class VTable<T> extends Composite {
 	}
 
 	public void setInput(List<T> listIn) {
-		objectList.clear();
 		if (listIn == null || listIn.size() == 0) {
 		} else {
-			objectList.addAll(listIn);
+			objectList = listIn;
 		}
 		if (pageManager != null && listIn != null) {
 			pageManager.setItemsCount(listIn.size());
@@ -233,10 +235,9 @@ public class VTable<T> extends Composite {
 	}
 
 	public void setPageInput(List<T> listIn) {
-		objectList.clear();
 		if (listIn == null || listIn.size() == 0) {
 		} else {
-			objectList.addAll(listIn);
+			objectList = listIn;
 		}
 		refresh();
 	}
@@ -473,10 +474,16 @@ public class VTable<T> extends Composite {
 	}
 
 	public void setTotalItemsCount(int totalItemsCount) {
+		if (pageManager == null) {
+			throw new VidgeException("*** Page Manager is null - check you creation style please");
+		}
 		pageManager.setItemsCount(totalItemsCount);
 	}
 
 	public void setPageListener(IPageListener iPageListener) {
+		if (pageManager == null) {
+			throw new VidgeException("*** Page Manager is null - check you creation style please");
+		}
 		pageManager.clearListeners();
 		pageManager.addPageListener(iPageListener);
 	}

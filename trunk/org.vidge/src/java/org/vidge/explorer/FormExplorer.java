@@ -31,12 +31,14 @@ public class FormExplorer<T> extends EntityExplorer {
 	}
 
 	public FormExplorer(IForm<T> inputForm) {
+		form = inputForm;
 		explore(inputForm);
 	}
 
 	public FormExplorer(Class<? extends IForm<T>> formClass) {
 		try {
-			explore(formClass.newInstance());
+			form = formClass.newInstance();
+			explore(form);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);

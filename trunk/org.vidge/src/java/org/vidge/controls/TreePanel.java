@@ -426,13 +426,15 @@ public class TreePanel {
 	}
 
 	public void refresh() {
-		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 
 			public void run() {
 				try {
-					section.setDescription(SELECTED);
-					tree.clearAll(true);
-					tree.setItemCount(1);
+					if (!section.isDisposed()) {
+						section.setDescription(SELECTED);
+						tree.clearAll(true);
+						tree.setItemCount(1);
+					}
 				} catch (Throwable e1) {
 					e1.printStackTrace();
 				}

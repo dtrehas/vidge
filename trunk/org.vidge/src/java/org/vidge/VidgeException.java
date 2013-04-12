@@ -1,6 +1,6 @@
 package org.vidge;
 
-public class VidgeException extends Exception {
+public class VidgeException extends RuntimeException {
 
 	private static final long serialVersionUID = -2237830481811463805L;
 
