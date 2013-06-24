@@ -40,6 +40,7 @@ import org.vidge.explorer.FormExplorer;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IForm;
 
+@Deprecated
 public class ObjectChooser<T> {
 
 	private Model<T> model;
