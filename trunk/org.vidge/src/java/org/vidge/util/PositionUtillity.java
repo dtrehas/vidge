@@ -17,6 +17,7 @@ public class PositionUtillity {
 	private static final String APP_LAST_POSITION = "app.last.position."; //$NON-NLS-1$
 	private static final String APP_LAST_SIZE = "app.last.size."; //$NON-NLS-1$
 	private static final String APP_MAXIMIZED = "app.maximized"; //$NON-NLS-1$
+	private static int cx = 0, cy = 0;
 
 	public static void initAppWindow(final Class<?> applicationClass) {
 		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -100,8 +101,16 @@ public class PositionUtillity {
 		try {
 			Rectangle displayBounds = client.getDisplay().getBounds();
 			Rectangle clientBounds = client.getBounds();
-			clientBounds.x = displayBounds.width / 2 - clientBounds.width / 2;
-			clientBounds.y = displayBounds.height / 2 - clientBounds.height / 2;
+			clientBounds.x = cx + displayBounds.width / 2 - clientBounds.width / 2;
+			clientBounds.y = cy + displayBounds.height / 2 - clientBounds.height / 2;
+			cx += 15;
+			cy += 15;
+			if (cx >= 150) {
+				cx = 0;
+			}
+			if (cy >= 150) {
+				cy = 0;
+			}
 			client.setBounds(clientBounds);
 		} catch (Throwable e) {
 			e.printStackTrace();
