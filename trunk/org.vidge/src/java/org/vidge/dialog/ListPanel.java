@@ -181,7 +181,9 @@ public class ListPanel<F> {
 			editExplorer.explore(selectionItem);
 			SingleObjectDialog<F> dialog = new SingleObjectDialog<F>(editExplorer, Messages.ObjectListDialog_10);
 			if (dialog.open() == Window.OK) {
-				dialog.getSelection();
+				F selection2 = dialog.getSelection();
+				((List) propertyExplorer.getValue()).remove(selectionItem);
+				((List) propertyExplorer.getValue()).add(selection2);
 				propertyExplorer.getValidator().validateComplete(selection);
 				section.setText(propertyExplorer.getValidator().getHelp());
 				table.refresh();
