@@ -24,6 +24,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -71,7 +72,7 @@ public class VTable<T> extends Composite {
 	}
 
 	public VTable(Composite parent, Class<T> objClass, List<T> listIn, int style) {
-		this(parent, FormRegistry.getEntityExplorer(FormContext.TABLE.name(), objClass), listIn, style);
+		this(parent, FormRegistry.getEntityExplorerTh(FormContext.TABLE.name(), objClass), listIn, style);
 	}
 
 	public VTable(Composite parent, IEntityExplorer tableExplorerIn, List<T> listIn, int style) {
@@ -84,7 +85,7 @@ public class VTable<T> extends Composite {
 		setLayout(layout);
 		this.tableExplorer = tableExplorerIn;
 		if (tableExplorerIn == null) {
-			throw new RuntimeException("***Not found IEntityExplorer ");
+			throw new RuntimeException("***Not found IEntityExplorer ! ");
 		}
 		createTable();
 		if ((getStyle() & PAGES) != 0) {
@@ -128,6 +129,10 @@ public class VTable<T> extends Composite {
 		}
 		item.setText(columnStrings);
 		item.setData(obj);
+		Color background2 = tableExplorer.getBackground(obj);
+		if (background2 != null) {
+			item.setBackground(background2);
+		}
 	}
 
 	protected void createColumns() {
@@ -224,8 +229,7 @@ public class VTable<T> extends Composite {
 	}
 
 	public void setInput(List<T> listIn) {
-		if (listIn == null || listIn.size() == 0) {
-		} else {
+		if (listIn != null) {
 			objectList = listIn;
 		}
 		if (pageManager != null && listIn != null) {
@@ -270,12 +274,22 @@ public class VTable<T> extends Composite {
 					@Override
 					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 						for (VColumn<T> column : columns) {
-							if (column.isFiltered() && column.getFilterMask().length() > 0) {
+							if (column.isFiltered()) {
 								Iterator<T> iterator = filteredList.iterator();
 								while (iterator.hasNext()) {
-									Object value = column.explorer.getValue(iterator.next());
-									if (value != null && !value.toString().contains(column.getFilterMask())) {
-										iterator.remove();
+									String value = column.getCellText(iterator.next());
+									if (column.getFilterMask().length() > 0) {
+										if (value != null) {
+											if (!StringUtil.match(value.toString(), column.getFilterMask())) {
+												iterator.remove();
+											}
+										} else {
+											iterator.remove();
+										}
+									} else {
+										if (value != null) {
+											iterator.remove();
+										}
 									}
 								}
 							}
