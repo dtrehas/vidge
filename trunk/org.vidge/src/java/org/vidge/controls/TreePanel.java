@@ -1,6 +1,7 @@
 package org.vidge.controls;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.vidge.SharedImages;
 import org.vidge.VidgeResources;
 import org.vidge.dialog.ObjectListDialog;
 import org.vidge.dialog.SingleObjectDialog;
+import org.vidge.explorer.StringExplorer;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IObjectDialog;
 import org.vidge.inface.IPropertyExplorer;
@@ -64,6 +66,10 @@ public class TreePanel {
 	private NodeBundle root;
 
 	public TreePanel(Object rootObject) {
+		setRoot(rootObject);
+	}
+
+	public void setRoot(Object rootObject) {
 		expIn = getExplorer(FormContext.TREE, rootObject);
 		expIn.explore(rootObject);
 		createRoot(expIn);
@@ -102,6 +108,9 @@ public class TreePanel {
 			if (entityExplorer != null) {
 				entityExplorer.explore(nodeBundle.value);
 			}
+		}
+		if (entityExplorer != null && StringExplorer.class.equals(entityExplorer.getClass())) {
+			return null;
 		}
 		return entityExplorer;
 	}
@@ -296,65 +305,94 @@ public class TreePanel {
 				item.setImage(VidgeResources.getInstance().getImage(SharedImages.OBJECTS));
 				item.setText(obtainStr(value));
 				propertyClass = ((NodeBundle) parentItem.getData()).propertyType;
-				IEntityExplorer explorer = FormRegistry.getEntityExplorer(FormContext.TREE.name(), propertyClass);
-				item.setItemCount(explorer.getPropertyList().size());
+				if (!TypeUtil.isPrimitive(propertyClass)) {
+					IEntityExplorer explorer = FormRegistry.getEntityExplorer(FormContext.TREE.name(), propertyClass);
+					item.setItemCount(explorer.getPropertyList().size());
+				} else {
+					item.setItemCount(0);
+				}
 			}
 
 			private String obtainStr(Object value) {
+				String result = "";
 				if (value == null || value.toString().equalsIgnoreCase("null")) {
-					return "";
+					return result;
 				}
 				if (LocalizedString.class.isAssignableFrom(value.getClass())) {
-					return ((LocalizedString) value).getDefaultLocalString();
+					result = ((LocalizedString) value).getDefaultLocalString();
+				} else if (Collection.class.isAssignableFrom(value.getClass())) {
+					result = ((Collection) value).toString();
+				} else if (Map.class.isAssignableFrom(value.getClass())) {
+					result = ((Map) value).toString();
+				} else if (value.getClass().isArray()) {
+					result = Arrays.toString((Object[]) value);
+				} else {
+					IEntityExplorer explorer = getExplorer(FormContext.TREE, value);
+					if (explorer == null) {
+						result = value.toString();
+					} else {
+						result = explorer.getString(value);
+					}
 				}
-				return value.toString();
+				if (result == null) {
+					result = "";
+				}
+				return result;
 			}
 
 			private void buildOrdinal(TreeItem item, TreeItem parentItem) {
 				IEntityExplorer parentEx = getExplorer(FormContext.TREE, (NodeBundle) parentItem.getData());
 				int indexOf = parentItem.indexOf(item);
 				IPropertyExplorer propertyExplorer = parentEx.getProperty(indexOf);
-				Class<?> propertyClass = propertyExplorer.getPropertyClass();
 				Object value = propertyExplorer.getValue();
-				if (Collection.class.isAssignableFrom(propertyClass) || Map.class.isAssignableFrom(propertyClass)) {
+				if (value == null) {
+					item.setText(propertyExplorer.getLabel());
+					item.setImage(VidgeResources.getInstance().getImage(SharedImages.BALL));
+					item.setItemCount(0);
+					return;
+				}
+				Class<?> propertyClass = propertyExplorer.getPropertyClass();
+				if (Collection.class.isAssignableFrom(propertyClass)) {
 					item.setImage(VidgeResources.getInstance().getImage(SharedImages.BARCHART));
 					item.setText(propertyExplorer.getLabel());
+					item.setItemCount(((Collection) value).size());
+					Class propertyType = TypeUtil.getGenericClass(propertyClass, propertyExplorer.getPropertyType());
+					NodeBundle nodeBundle = new NodeBundle(value, propertyExplorer.getPropertyName(), propertyType);
+					nodeBundle.value = value;
+					item.setData(nodeBundle);
+					return;
+				} else if (Map.class.isAssignableFrom(propertyClass)) {
+					item.setImage(VidgeResources.getInstance().getImage(SharedImages.BARCHART));
+					item.setText(propertyExplorer.getLabel());
+					item.setItemCount(((Map) value).size());
+					Class propertyType = TypeUtil.getGenericClass(propertyClass, propertyExplorer.getPropertyType());
+					NodeBundle nodeBundle = new NodeBundle(value, propertyExplorer.getPropertyName(), propertyType);
+					nodeBundle.value = value;
+					item.setData(nodeBundle);
+					return;
 				} else if (propertyClass.isArray()) {
 					item.setImage(VidgeResources.getInstance().getImage(SharedImages.CARDFILE));
 					item.setText(propertyExplorer.getLabel());
+					item.setItemCount(Array.getLength(value));
+					Class propertyType = TypeUtil.getGenericClass(propertyClass, propertyExplorer.getPropertyType());
+					NodeBundle nodeBundle = new NodeBundle(value, propertyExplorer.getPropertyName(), propertyType);
+					nodeBundle.value = value;
+					item.setData(nodeBundle);
+					return;
 				} else {
+					item.setItemCount(0);
 					item.setImage(VidgeResources.getInstance().getImage(SharedImages.BALL));
 					item.setText(propertyExplorer.getLabel() + " : " + obtainStr(value));
-				}
-				IEntityExplorer explorer = FormRegistry.getEntityExplorer(FormContext.TREE.name(), propertyClass);
-				if (explorer != null) {
-					item.setImage(VidgeResources.getInstance().getImage(SharedImages.OBJECTS));
-					NodeBundle nodeBundle = new NodeBundle(value, propertyExplorer.getPropertyName());
-					nodeBundle.value = value;
-					if (value != null) {
-						item.setItemCount(explorer.getPropertyList().size());
-					} else {
-						item.setItemCount(0);
-					}
-					item.setData(nodeBundle);
-				} else {
-					if (List.class.isAssignableFrom(propertyClass) || Map.class.isAssignableFrom(propertyClass) || propertyClass.isArray()) {
-						Class propertyType = TypeUtil.getGenericClass(propertyClass, propertyExplorer.getPropertyType());
-						NodeBundle nodeBundle = new NodeBundle(value, propertyExplorer.getPropertyName(), propertyType);
-						nodeBundle.value = value;
-						item.setData(nodeBundle);
-					}
-					if (value == null) {
-						item.setItemCount(0);
-					} else {
-						if (Collection.class.isAssignableFrom(propertyClass)) {
-							item.setItemCount(((Collection) value).size());
-						} else if (Map.class.isAssignableFrom(propertyClass)) {
-							item.setItemCount(((Map) value).size());
-						} else if (propertyClass.isArray()) {
-							item.setItemCount(Array.getLength(value));
-						} else {
-							item.setItemCount(0);
+					if (!TypeUtil.isPrimitive(propertyClass)) {
+						IEntityExplorer explorer = FormRegistry.getEntityExplorer(FormContext.TREE.name(), propertyClass);
+						if (explorer != null && !StringExplorer.class.equals(explorer.getClass())) {
+							item.setImage(VidgeResources.getInstance().getImage(SharedImages.OBJECTS));
+							item.setData(new NodeBundle(value, propertyExplorer.getPropertyName()));
+							if (value != null) {
+								item.setItemCount(explorer.getPropertyList().size());
+							} else {
+								item.setItemCount(0);
+							}
 						}
 					}
 				}
@@ -557,10 +595,10 @@ public class TreePanel {
 				IPropertyExplorer propertyExplorer = explorer.getProperty(nodeBundle.propertyName);
 				dialog = new SingleObjectDialog(explorer, "Edit Item", null);
 				if (dialog.open() == Window.OK) {
+					Object selection2 = dialog.getSelection();
 					if (propertyExplorer != null) {
-						propertyExplorer.setValue(dialog.getSelection());
+						propertyExplorer.setValue(selection2);
 					} else {
-						Object selection2 = dialog.getSelection();
 						selection2 = explorer.doInputChanged(selection2, ValueAction.UPDATE, null);
 					}
 					refresh();
