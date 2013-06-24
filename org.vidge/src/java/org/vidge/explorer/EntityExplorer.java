@@ -8,9 +8,11 @@ import java.util.Map;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.vidge.VidgeException;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IPropertyExplorer;
 import org.vidge.inface.ValueAction;
+import org.vidge.util.StringUtil;
 
 public abstract class EntityExplorer implements IEntityExplorer {
 
@@ -108,7 +110,7 @@ public abstract class EntityExplorer implements IEntityExplorer {
 
 	@Override
 	public boolean allowParts() {
-		return true;
+		return input != null;
 	}
 
 	public boolean addProperty(IPropertyExplorer e) {
@@ -159,9 +161,8 @@ public abstract class EntityExplorer implements IEntityExplorer {
 		try {
 			return inputClass.newInstance();
 		} catch (Throwable e) {
-			e.printStackTrace();
+			throw new VidgeException(e);
 		}
-		return null;
 	}
 
 	@Override
@@ -199,5 +200,13 @@ public abstract class EntityExplorer implements IEntityExplorer {
 	@Override
 	public Object checkInstance(Object context) {
 		return null;
+	}
+
+	@Override
+	public String getString(Object value) {
+		if (value == null) {
+			return StringUtil.NN;
+		}
+		return value.toString();
 	}
 }
