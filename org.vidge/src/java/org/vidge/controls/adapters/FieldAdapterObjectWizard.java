@@ -5,14 +5,15 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.vidge.PropertyController;
-import org.vidge.controls.editor.ObjectEditor;
+import org.vidge.controls.ObjectWizardField;
 
 /**
  * @author nemo
  */
+@SuppressWarnings("rawtypes")
 public class FieldAdapterObjectWizard extends AbstractFieldAdapter {
 
-	private ObjectEditor chooserField;
+	private ObjectWizardField chooserField;
 
 	public FieldAdapterObjectWizard(PropertyController controller, Composite parent) {
 		super(controller, parent);
@@ -21,7 +22,7 @@ public class FieldAdapterObjectWizard extends AbstractFieldAdapter {
 
 	@Override
 	protected void createControl(Composite parent) {
-		chooserField = new ObjectEditor(parent, SWT.NONE, controller);
+		chooserField = new ObjectWizardField(parent, SWT.NONE, controller);
 	}
 
 	@Override
