@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: org.vidge
 Bundle-SymbolicName: org.vidge;singleton:=true
 Bundle-Version: 2.0
-Bundle-Vendor: SUSoftware
+Bundle-Vendor: Vidge.org
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
