@@ -101,4 +101,21 @@ public class StringUtil {
 	public static boolean isEmpty(String label) {
 		return label == null || label.trim().length() == 0;
 	}
+
+	public static boolean match(String string, String value) {
+		if (!VidgeSettings.getCaseSensitive()) {
+			string = string.toLowerCase();
+			value = value.toLowerCase();
+		}
+		switch (VidgeSettings.getStringMatchPolicy()) {
+			case CONTAINS:
+				return string.contains(value);
+			case ENDS:
+				return string.endsWith(value);
+			case STARTS:
+				return string.startsWith(value);
+			default:
+				return string.contains(value);
+		}
+	}
 }

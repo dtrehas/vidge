@@ -120,6 +120,18 @@ public class TypeUtil {
 		return controlType;
 	}
 
+	public static boolean isPrimitive(Class<?> klass) {
+		if (klass != null) {
+			if (klass.equals(String.class) || klass.equals(Integer.class) || klass.equals(Long.class) || klass.equals(Character.class) || klass.equals(Boolean.class) || klass.equals(Object.class)
+				|| klass.equals(BigDecimal.class) || klass.equals(Date.class) || klass.equals(Double.class) || klass.equals(Float.class) || klass.equals(BigInteger.class) || klass.equals(Byte.class)
+				|| klass.equals(int.class) || klass.equals(double.class) || klass.equals(float.class) || klass.equals(boolean.class) || klass.equals(long.class) || klass.equals(char.class)
+				|| klass.equals(byte.class) || klass.equals(byte[].class) || klass.equals(char[].class) || klass.equals(void.class) || klass.isEnum()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private static boolean isTextControl(Class<?> klass) {
 		if (klass != null) {
 			if (klass.equals(String.class) || klass.equals(Integer.class) || klass.equals(Long.class) || klass.equals(Character.class) || klass.equals(BigDecimal.class) || klass.equals(Double.class)
@@ -156,8 +168,6 @@ public class TypeUtil {
 		}
 		return klazz;
 	}
-
-
 
 	@SuppressWarnings("rawtypes")
 	public static IEntityExplorer getExplorer(Class<?> inputClass, String context, IPropertyExplorer propertyExplorer) {
