@@ -3,11 +3,10 @@ package org.vidge.inface;
 import java.util.List;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
 @SuppressWarnings("rawtypes")
-public interface IEntityExplorer extends IFormInputChangeListener, IFormDataProvider, IFormFactory {
+public interface IEntityExplorer extends IFormInputChangeListener, IFormDataProvider, IFormFactory, IColorForm {
 
 	public void explore(Object input);
 
@@ -18,10 +17,6 @@ public interface IEntityExplorer extends IFormInputChangeListener, IFormDataProv
 	public List<IPropertyExplorer> getPropertyList();
 
 	public Image getImage(Object element, int index);
-
-	public Color getBackground(Object element);
-
-	public Color getForeground(Object element);
 
 	public void setInput(Object input);
 
@@ -58,4 +53,6 @@ public interface IEntityExplorer extends IFormInputChangeListener, IFormDataProv
 	public boolean removeInput();
 
 	public void checkInput();
+
+	public String getString(Object value);
 }
