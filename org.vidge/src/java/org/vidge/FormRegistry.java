@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.langcom.locale.LocalizedStringPart;
 import org.vidge.explorer.FormExplorer;
+import org.vidge.explorer.StringExplorer;
 import org.vidge.form.LocaleForm;
 import org.vidge.form.LocalizedStringPartForm2;
 import org.vidge.inface.IEntityExplorer;
@@ -27,6 +28,7 @@ public class FormRegistry {
 	static {
 		registerForm(Locale.class, LocaleForm.class);
 		registerForm(LocalizedStringPart.class, LocalizedStringPartForm2.class);
+		registerContextExplorer(null, String.class, new StringExplorer());
 	}
 
 	private FormRegistry() {
@@ -64,6 +66,9 @@ public class FormRegistry {
 		if (map == null && context.equalsIgnoreCase(FormContext.CREATE.name())) {
 			map = contextRegistry.get(FormContext.EDIT.name());
 		}
+		if (map == null && context != null) {
+			map = contextRegistry.get(null);
+		}
 		IEntityExplorer result = null;
 		if (map != null) {
 			result = map.get(klass);
@@ -76,6 +81,14 @@ public class FormRegistry {
 			// result = new ObjectExplorer(klass);
 		}
 		return result.copy();
+	}
+
+	public static IEntityExplorer getEntityExplorerTh(String context, Class<?> klass) {
+		IEntityExplorer result = getEntityExplorer(context, klass);
+		if (result == null) {
+			throw new VidgeException("*** Not found entity explorer for class - " + klass.getName());
+		}
+		return result;
 	}
 
 	private static IEntityExplorer searchSimilar(Class<?> klass) {
