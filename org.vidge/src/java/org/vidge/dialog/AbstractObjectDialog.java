@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.PlatformUI;
+import org.vidge.explorer.StringExplorer;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IObjectDialog;
 import org.vidge.util.PositionUtillity;
@@ -61,8 +62,12 @@ public abstract class AbstractObjectDialog<F> extends TitleAreaDialog implements
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public F getSelection() {
+		if (explorer != null && explorer.getClass().equals(StringExplorer.class)) {
+			return (F) explorer.getInput();
+		}
 		return selection;
 	}
 
