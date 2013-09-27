@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.vidge.inface.IForm;
+import org.vidge.form.IForm;
 import org.vidge.test.entity.FormTestClass;
 import org.vidge.test.entity.FormTestClass2;
 import org.vidge.test.entity.TestEnum;
@@ -41,15 +41,6 @@ public class TestForm3 implements IForm<FormTestClass> {
 		input.setReference(reference);
 	}
 
-	@VisualProperty(order = 8, embedded = true)
-	public List<FormTestClass2> getTestList() {
-		return input.getTestList();
-	}
-
-	public void setTestList(List<FormTestClass2> testList) {
-		input.setTestList(testList);
-	}
-
 	@VisualProperty(order = 7)
 	public TestEnum getEnumValue() {
 		return input.getEnumValue();
@@ -75,5 +66,15 @@ public class TestForm3 implements IForm<FormTestClass> {
 
 	public void setChild(FormTestClass child) {
 		input.setChild(child);
+	}
+
+	@VisualProperty(order = 8)
+	public List<FormTestClass2> getTestList() {
+		return input.getTestList();
+	}
+
+	@VisualProperty(order = 9, lazyOverride = true, lazy = true)
+	public List<FormTestClass> getTestList2333() {
+		return input.getTestList2();
 	}
 }
