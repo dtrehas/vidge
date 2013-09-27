@@ -33,14 +33,11 @@ public class VidgeErrorDialog extends IconAndMessageDialog {
 	private final String title;
 	private Combo combo;
 	private Text text;
-	private String msg;
 
 	public VidgeErrorDialog(Shell parentShell, String title, String mesg, Throwable err) {
 		super(parentShell);
 		this.title = title;
-		if (err != null)
-			message = mesg;
-		msg = mesg;
+		message = mesg;
 		this.err = err;
 		setShellStyle(SWT.CLOSE | SWT.MAX | SWT.MIN | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL | SWT.RESIZE | getDefaultOrientation());
 	}
@@ -102,7 +99,7 @@ public class VidgeErrorDialog extends IconAndMessageDialog {
 			try {
 				String data = "";
 				if (err == null) {
-					data = msg;
+					data = message;
 				} else {
 					data = StringUtil.buildErrorTraceString(err);
 				}
@@ -117,15 +114,14 @@ public class VidgeErrorDialog extends IconAndMessageDialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		createMessageArea(parent);
-		text = new Text(parent, SWT.MULTI | SWT.WRAP | SWT.BORDER | SWT.V_SCROLL);
-		text.setForeground(PlatformUI.getWorkbench().getDisplay().getSystemColor(SWT.COLOR_RED));
-		GridData childData = new GridData(GridData.FILL_BOTH);
-		childData.horizontalSpan = 2;
-		text.setLayoutData(childData);
-		text.setFont(parent.getFont());
 		if (err == null) {
-			text.setText(msg);
 		} else {
+			text = new Text(parent, SWT.MULTI | SWT.WRAP | SWT.BORDER | SWT.V_SCROLL);
+			text.setForeground(PlatformUI.getWorkbench().getDisplay().getSystemColor(SWT.COLOR_RED));
+			GridData childData = new GridData(GridData.FILL_BOTH);
+			childData.horizontalSpan = 2;
+			text.setLayoutData(childData);
+			text.setFont(parent.getFont());
 			text.setText(StringUtil.buildErrorTraceString(err));
 		}
 		return parent;

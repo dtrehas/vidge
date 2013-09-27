@@ -91,7 +91,7 @@ public class PropertyController implements Comparable<PropertyController>, Focus
 	public boolean setFocus() {
 		fieldAdapter.getControl().removeFocusListener(this);
 		boolean setFocus = fieldAdapter.getControl().setFocus();
-		plainForm.statusChanged();
+		plainForm.statusChanged(this);
 		fieldAdapter.getControl().addFocusListener(this);
 		return setFocus;
 	}
@@ -108,10 +108,15 @@ public class PropertyController implements Comparable<PropertyController>, Focus
 	}
 
 	public void inValidate() {
-		plainForm.statusChanged();
+		plainForm.statusChanged(this);
 	}
 
 	public void refreshView() {
 		plainForm.refreshView();
+	}
+
+	@Override
+	public String toString() {
+		return "PropertyController [controlType=" + controlType + ", nameControl=" + nameControl.getText() + "]";
 	}
 }

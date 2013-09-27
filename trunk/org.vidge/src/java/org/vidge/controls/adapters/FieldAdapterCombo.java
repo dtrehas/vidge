@@ -72,7 +72,7 @@ public class FieldAdapterCombo extends AbstractFieldAdapter {
 				}
 			}
 		}
-		return 0;
+		return -1;
 	}
 
 	@Override

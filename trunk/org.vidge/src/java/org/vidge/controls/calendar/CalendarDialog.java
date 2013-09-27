@@ -27,7 +27,7 @@ public class CalendarDialog extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		calendarChooser = new CalendarChooser(parent);
+		calendarChooser = new CalendarChooser(parent, SWT.BORDER);
 		calendarChooser.addKeyListener(new KeyAdapter() {
 
 			@Override

@@ -50,15 +50,24 @@ public class FieldAdapterObjectEditor extends AbstractFieldAdapter {
 
 	@Override
 	public boolean isVolatile() {
-		return false;
-	}
-
-	@Override
-	public void refreshControl() {
-		setVisualValue(controller.getExplorer().getValue());
+		return true;
 	}
 
 	@Override
 	public void inValidate() {
+		if (editor.getLazy()) {
+		} else {
+			super.inValidate();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void refreshControl() {
+		if (editor.getLazy()) {
+			editor.refresh(null);
+		} else {
+			setVisualValue(editor.getSelection());
+		}
 	}
 }

@@ -1,8 +1,8 @@
 package org.vidge.form.validator;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.vidge.VidgeSettings;
 import org.vidge.util.StringUtil;
 
 public class NaturalDateValidator implements IValidator<Date> {
@@ -12,7 +12,6 @@ public class NaturalDateValidator implements IValidator<Date> {
 	private boolean canEmpty;
 	private Date maximumDate;
 	private Date minimumDate;
-	private SimpleDateFormat dateFormat = new SimpleDateFormat(Messages.NaturalDateValidator_date_template);
 	private Date newValue;
 
 	public NaturalDateValidator(Date maximumDate, Date minimumDate, boolean canEmpty) {
@@ -35,11 +34,11 @@ public class NaturalDateValidator implements IValidator<Date> {
 		}
 		newValue = (Date) value;
 		if ((maximumDate != null) && (newValue.getTime() > maximumDate.getTime())) {
-			message = Messages.NaturalDateValidator_2 + StringUtil.SP2 + dateFormat.format(maximumDate);
+			message = Messages.NaturalDateValidator_2 + StringUtil.SP2 + VidgeSettings.formatDate(maximumDate);
 			return false;
 		}
 		if ((minimumDate != null) && (newValue.getTime() < minimumDate.getTime())) {
-			message = Messages.NaturalDateValidator_3 + StringUtil.SP2 + dateFormat.format(minimumDate);
+			message = Messages.NaturalDateValidator_3 + StringUtil.SP2 + VidgeSettings.formatDate(minimumDate);
 			return false;
 		}
 		return true;

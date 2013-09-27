@@ -1,8 +1,8 @@
 package org.vidge.controls.tree;
 
 import org.eclipse.jface.action.Action;
-import org.vidge.VidgeResources;
 import org.vidge.SharedImages;
+import org.vidge.VidgeResources;
 
 
 public class CommonSearchAction extends Action{

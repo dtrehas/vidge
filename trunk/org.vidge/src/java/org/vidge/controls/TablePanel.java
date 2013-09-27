@@ -3,6 +3,7 @@ package org.vidge.controls;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -12,6 +13,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
@@ -23,19 +25,20 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.vidge.FormRegistry;
 import org.vidge.SharedImages;
 import org.vidge.Vidge;
+import org.vidge.VidgeException;
 import org.vidge.VidgeResources;
 import org.vidge.controls.chooser.IPageListener;
 import org.vidge.controls.chooser.NTable;
 import org.vidge.controls.chooser.VTable;
 import org.vidge.dialog.SingleObjectDialog;
 import org.vidge.explorer.FormExplorer;
+import org.vidge.form.IForm;
+import org.vidge.form.IFormInputChangeListener;
 import org.vidge.inface.IChangeListener;
 import org.vidge.inface.IEntityExplorer;
-import org.vidge.inface.IForm;
-import org.vidge.inface.IFormInputChangeListener;
 import org.vidge.inface.IObjectDialog;
-import org.vidge.inface.ValueAction;
 import org.vidge.util.FormContext;
+import org.vidge.util.ValueAction;
 
 @SuppressWarnings("rawtypes")
 public class TablePanel<T> {
@@ -57,6 +60,7 @@ public class TablePanel<T> {
 
 	public TablePanel(Composite parent, Class<T> objClass, List<T> objectList, int style) {
 		this(objClass, objectList, style);
+		createViewer(parent);
 	}
 
 	public TablePanel(Composite parent, Class<T> objClass, List<T> objectList) {
@@ -72,7 +76,9 @@ public class TablePanel<T> {
 
 	@SuppressWarnings("unchecked")
 	public TablePanel(Class<T> objClass, List<T> listIn, Class formClass, int style) {
-		this(objClass, listIn, style);
+		this.objClass = objClass;
+		this.style = style;
+		this.objectList = (listIn == null ? new ArrayList<T>() : listIn);
 		this.formClass = formClass;
 		expIn = new FormExplorer<T>(formClass);
 	}
@@ -82,6 +88,9 @@ public class TablePanel<T> {
 		this.style = style;
 		this.objectList = (listIn == null ? new ArrayList<T>() : listIn);
 		expIn = FormRegistry.getEntityExplorer(FormContext.TABLE.name(), objClass);
+		if (expIn == null) {
+			throw new VidgeException("*** EntityExplorer for table not found for class -  " + objClass);
+		}
 	}
 
 	public void addChangeListener(IChangeListener listener) {
@@ -234,7 +243,8 @@ public class TablePanel<T> {
 		IEntityExplorer entityExplorer = FormRegistry.getEntityExplorer(FormContext.CREATE.name(), objClass);
 		IObjectDialog<T> dialog = new SingleObjectDialog<T>(entityExplorer, "Add Item", null);
 		if (dialog.open() == Window.OK) {
-			entityExplorer.doInputChanged(dialog.getSelection(), ValueAction.SAVE, null);
+			Object object = entityExplorer.doInputChanged(dialog.getSelection(), ValueAction.SAVE, null);
+			entityExplorer.setInput(object);
 			fireTableChanged();
 			fireFormChanged(dialog.getSelection(), ValueAction.SAVE, null);
 			refresh();
@@ -245,7 +255,10 @@ public class TablePanel<T> {
 	public void editItem() {
 		T selection = vtable.getSelection();
 		if (selection == null) {
-			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "No selection", "You have to select Item for editing");
+			MessageDialog.openInformation(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				"No selection",
+				"You have to select Item for editing");
 		} else {
 			IEntityExplorer entityExplorer = FormRegistry.getEntityExplorer(FormContext.EDIT.name(), objClass);
 			entityExplorer.explore(selection);
@@ -263,9 +276,14 @@ public class TablePanel<T> {
 	public void deleteItem() {
 		T selection = vtable.getSelection();
 		if (selection == null) {
-			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "No selection", "You have to select Item for removing");
+			MessageDialog.openInformation(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				"No selection",
+				"You have to select Item for removing");
 		} else {
-			if (MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Remove Item", "Do you really want to remove This item ?")) { //$NON-NLS-1$
+			if (MessageDialog.openConfirm(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				"Remove Item", "Do you really want to remove This item ?")) { //$NON-NLS-1$
 				IEntityExplorer entityExplorer = FormRegistry.getEntityExplorer(FormContext.EDIT.name(), objClass);
 				selection = (T) entityExplorer.doInputChanged(selection, ValueAction.DELETE, null);
 				fireTableChanged();
@@ -370,5 +388,17 @@ public class TablePanel<T> {
 
 	public IEntityExplorer getEntityExplorer() {
 		return expIn;
+	}
+
+	public void addContextMenu(Action action, int index) {
+		vtable.addContextMenu(action, index);
+	}
+
+	public void addContextMenu(Image image, String text, int index, Runnable runnable) {
+		vtable.addContextMenu(image, text, index, runnable);
+	}
+
+	public VTable<T> getVtable() {
+		return vtable;
 	}
 }

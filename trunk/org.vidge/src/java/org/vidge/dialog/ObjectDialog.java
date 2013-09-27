@@ -34,14 +34,15 @@ import org.vidge.controls.chooser.Filter;
 import org.vidge.controls.chooser.Messages;
 import org.vidge.controls.chooser.ObjectChooser;
 import org.vidge.explorer.FormExplorer;
+import org.vidge.form.IForm;
 import org.vidge.inface.IEntityExplorer;
-import org.vidge.inface.IForm;
 import org.vidge.inface.IObjectDialog;
 import org.vidge.status.IStatusListener;
 import org.vidge.status.PropertyStatus;
 import org.vidge.util.PositionUtillity;
 import org.vidge.util.VisualControlType;
 
+@Deprecated
 public class ObjectDialog<F> extends TitleAreaDialog implements IObjectDialog<F> {
 
 	private static final Point DEFAULT_SIZE = new Point(800, 500);

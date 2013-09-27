@@ -116,4 +116,16 @@ public class PositionUtillity {
 			e.printStackTrace();
 		}
 	}
+
+	public static void centerAbs(Composite client, int width, int height, int yshift, int xshift) {
+		try {
+			Rectangle displayBounds = PlatformUI.getWorkbench().getDisplay().getBounds();
+			Rectangle clientBounds = new Rectangle(0, 0, width, height);
+			clientBounds.x = displayBounds.width / 2 - width / 2 + xshift;
+			clientBounds.y = displayBounds.height / 2 - height / 2 + yshift;
+			client.setBounds(clientBounds);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
 }

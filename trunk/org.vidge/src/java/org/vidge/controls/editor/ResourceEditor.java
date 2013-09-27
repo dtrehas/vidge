@@ -1,7 +1,6 @@
 package org.vidge.controls.editor;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -13,7 +12,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
@@ -42,8 +40,8 @@ public class ResourceEditor extends Composite {
 	public ResourceEditor(Composite parent, int style, PropertyController controller) {
 		super(parent, SWT.BORDER);
 		this.controller = controller;
-		preferredSize.x = controller.getExplorer().getVisualAreaWidth();
-		preferredSize.y = controller.getExplorer().getVisualAreaHeight();
+		preferredSize.x = controller.getExplorer().getImageWidth();
+		preferredSize.y = controller.getExplorer().getImageHeight();
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 3;
 		layout.marginWidth = 0;
@@ -122,19 +120,12 @@ public class ResourceEditor extends Composite {
 				image.dispose();
 			}
 			try {
-				image = new Image(this.getDisplay(), new ImageData(new ByteArrayInputStream(selection)));
+				image = new Image(this.getDisplay(), fitData(selection));
 			} catch (Exception e) {
 				e.printStackTrace();
 				createDefaultImage();
 			}
 		} else {
-			createDefaultImage();
-		}
-		try {
-			ImageData imageData = image.getImageData().scaledTo(preferredSize.x, preferredSize.y);
-			image = new Image(this.getDisplay(), imageData);
-		} catch (Exception e) {
-			e.printStackTrace();
 			createDefaultImage();
 		}
 		label.setImage(image);
@@ -148,27 +139,15 @@ public class ResourceEditor extends Composite {
 		image = new Image(this.getDisplay(), new ImageData(preferredSize.x, preferredSize.y, 8, dataPalette));
 	}
 
-	private byte[] fitData(byte[] array) {
-		System.out.println("-------------before--------------" + array.length);
-		if (array != null) {
-			ImageData imageData = new ImageData(new ByteArrayInputStream(array));
-			if (imageData.width > controller.getExplorer().getImageWidth()) {
-				imageData = imageData.scaledTo(controller.getExplorer().getImageWidth(), imageData.height);
-			}
-			if (imageData.height > controller.getExplorer().getImageHeight()) {
-				imageData = imageData.scaledTo(imageData.width, controller.getExplorer().getImageHeight());
-			}
-			ImageLoader loader = new ImageLoader();
-			loader.data = new ImageData[] {
-				imageData
-			};
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			loader.save(outputStream, SWT.IMAGE_PNG);
-			byte[] byteArray = outputStream.toByteArray();
-			System.out.println("-------------after--------------" + byteArray.length);
-			return byteArray;
+	private ImageData fitData(byte[] array) {
+		ImageData imageData = new ImageData(new ByteArrayInputStream(array));
+		if (controller.getExplorer().getImageWidth() > 0 && imageData.width > controller.getExplorer().getImageWidth()) {
+			imageData = imageData.scaledTo(controller.getExplorer().getImageWidth(), imageData.height);
 		}
-		return array;
+		if (controller.getExplorer().getImageHeight() > 0 && imageData.height > controller.getExplorer().getImageHeight()) {
+			imageData = imageData.scaledTo(imageData.width, controller.getExplorer().getImageHeight());
+		}
+		return imageData;
 	}
 
 	private void makeClearButton() {

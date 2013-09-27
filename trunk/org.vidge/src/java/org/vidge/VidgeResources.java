@@ -1,5 +1,7 @@
 package org.vidge;
 
+import java.util.logging.Logger;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -10,14 +12,12 @@ public class VidgeResources {
 	private static VidgeResources instance = new VidgeResources();
 
 	private VidgeResources() {
-		imr = Activator.getDefault().getImageRegistry();
 		initializeImageRegistry();
 	}
 
-	private void initializeImageRegistry() {
+	public void initializeImageRegistry() {
+		imr = Activator.getDefault().getImageRegistry();
 		registerImage(SharedImages.DEFAULT, "database.gif"); //$NON-NLS-1$
-		registerImage(SharedImages.DEFAULT_FILTER, "delete.gif"); //$NON-NLS-1$
-		registerImage(SharedImages.REMOVE_FILTER, "remove_filter.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.FILTER, "filter-2.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.LAYOUT_HORIZONTAL, "th_horizontal.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.LAYOUT_VERTICAL, "th_vertical.gif"); //$NON-NLS-1$
@@ -39,13 +39,11 @@ public class VidgeResources {
 		registerImage(SharedImages.DEFAULT_NODE, "blue.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.ACTION_PLUS2, "plus2.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.DELETE, "delete.gif"); //$NON-NLS-1$
-		registerImage(SharedImages.EMPTY, "empty3.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.SQUARE, "square.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.TREE_EXP, "TreeExp.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.CARDFILE, "card-file.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.OBJECTS, "objects.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.BSQUARE, "blue-square-button.gif"); //$NON-NLS-1$
-		registerImage(SharedImages.BGREEN, "16green.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.BALL, "ball.png"); //$NON-NLS-1$
 		registerImage(SharedImages.BARCHART, "bar-chart.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.DBADD, "database-add.gif"); //$NON-NLS-1$
@@ -55,19 +53,19 @@ public class VidgeResources {
 		registerImage(SharedImages.LOCK, "lock.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.CLOCK, "clock-2.gif"); //$NON-NLS-1$
 		registerImage(SharedImages.CALENDAR, "calendar.gif"); //$NON-NLS-1$
+		registerImage(SharedImages.TICK, "tick.gif");
 	}
 
 	private void registerImage(SharedImages imageName, String fileName) {
 		try {
 			ImageDescriptor dsc = Activator.imageDescriptorFromPlugin(Activator.ID, "icons/" + fileName);
 			if (dsc == null) {
-				System.out.println("--------Image not found:--------  " + imageName + "/" + fileName);
+				Logger.getLogger("Vidge").info("--------Image not found:--------  " + imageName + "/" + fileName);
 				return;
 			}
 			imr.put(imageName.name(), dsc);
-			// imr.put(imageName.name(), dsc.createImage(true));
 		} catch (Exception e) {
-			e.printStackTrace();
+			new VidgeException(e);
 		}
 	}
 

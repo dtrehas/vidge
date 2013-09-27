@@ -10,6 +10,8 @@ public class Activator extends AbstractUIPlugin {
 
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		plugin = this;
+		// VidgeSettings.init("..//vidge.resources");
 	}
 
 	public void stop(BundleContext context) throws Exception {
@@ -18,9 +20,6 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public static Activator getDefault() {
-		if (plugin == null) {
-			plugin = new Activator();
-		}
 		return plugin;
 	}
 }

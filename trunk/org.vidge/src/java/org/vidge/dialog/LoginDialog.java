@@ -17,21 +17,35 @@ public class LoginDialog extends Dialog {
 
 	private String login = "";
 	private String password;
+	private boolean posAbs = false;
 
 	public LoginDialog(Shell parentShell) {
 		super(parentShell);
 		setShellStyle(SWT.TOOL | SWT.FLAT | SWT.APPLICATION_MODAL);
 	}
 
+	public LoginDialog(Shell parentShell, boolean posAbs) {
+		super(parentShell);
+		this.posAbs = posAbs;
+		setShellStyle(SWT.TOOL | SWT.FLAT | SWT.APPLICATION_MODAL);
+	}
+
 	@Override
 	protected Control createContents(Composite parent) {
-		PositionUtillity.center(parent);
+		if (posAbs) {
+			PositionUtillity.centerAbs(parent, 300, 150, 200, 0);
+		} else {
+			PositionUtillity.center(parent);
+		}
 		Control control = super.createContents(parent);
 		return control;
 	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
+		// parent.setBackgroundImage(VidgeResources.getInstance().getImage(SharedImages.DIAGONAL));
+		// parent.setBackgroundMode(SWT.INHERIT_DEFAULT);
+		// parent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_YELLOW));
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 		FillLayout layout = new FillLayout(SWT.VERTICAL);

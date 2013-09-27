@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.PlatformUI;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IObjectDialog;
+import org.vidge.inface.IPropertyExplorer;
 import org.vidge.util.PositionUtillity;
 
 public abstract class AbstractSimpleDialog<F> extends Dialog implements IObjectDialog<F> {
@@ -18,10 +19,21 @@ public abstract class AbstractSimpleDialog<F> extends Dialog implements IObjectD
 	protected Point size;
 	protected final String title;
 	protected F selection;
+	protected IPropertyExplorer propertyExplorer;
 
 	public AbstractSimpleDialog(IEntityExplorer entityExplorer, String title, Point size) {
 		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 		this.explorer = entityExplorer;
+		setShellStyle(SWT.CLOSE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL | SWT.RESIZE | getDefaultOrientation());
+		this.title = title;
+		this.size = size;
+		setSelection();
+	}
+
+	public AbstractSimpleDialog(IEntityExplorer entityExplorer, String title, Point size, IPropertyExplorer propertyExplorer) {
+		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+		this.explorer = entityExplorer;
+		this.propertyExplorer = propertyExplorer;
 		setShellStyle(SWT.CLOSE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL | SWT.RESIZE | getDefaultOrientation());
 		this.title = title;
 		this.size = size;
@@ -44,8 +56,12 @@ public abstract class AbstractSimpleDialog<F> extends Dialog implements IObjectD
 			size = DEFAULT_SIZE;
 		}
 		parent.setSize(size);
-		if (title != null) {
-			this.getShell().setText(title);
+		if (explorer.getHeader() == null) {
+			if (title != null) {
+				this.getShell().setText(title);
+			}
+		} else {
+			this.getShell().setText(explorer.getHeader());
 		}
 		PositionUtillity.center(parent);
 		Control control = super.createContents(parent);

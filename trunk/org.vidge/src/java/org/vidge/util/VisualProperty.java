@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface VisualProperty {
 
 	/**
-	 * Purposed for custom selection of message from file - if you where not pleased of metod name
+	 * Purposed for custom selection of message from file - if you where not pleased of metod name - this is a key for searching a value into properties file with postfix 'label'
 	 * 
 	 * @return
 	 */
@@ -26,13 +26,18 @@ public @interface VisualProperty {
 
 	boolean name_visible() default true;
 
+	/**
+	 * Purposed for custom selection of message from file - if you where not pleased of metod name - this is a key for searching a value into properties file with postfix 'description'
+	 * 
+	 * @return
+	 */
 	String description() default "";
 
-	int width() default 48;
+	int width() default -1;
 
-	int height() default 48;
+	int height() default -1;
 
-	int imageWidth() default 48;
+	int imageWidth() default 16;
 
-	int imageHeight() default 48;
+	int imageHeight() default 16;
 }

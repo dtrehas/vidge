@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.vidge.controls.tree.hierarchy.IHierarchyProvider;
+import org.vidge.form.IFormObjectWizard;
 import org.vidge.form.validator.IValidator;
 import org.vidge.util.VisualControlType;
 
@@ -51,7 +52,7 @@ public interface IPropertyExplorer extends Comparable<IPropertyExplorer> {
 
 	public Color getBackground();
 
-	public IObjectWizard getWizard();
+	public IFormObjectWizard getWizard();
 
 	public void setChecked(Boolean selection);
 
@@ -62,6 +63,8 @@ public interface IPropertyExplorer extends Comparable<IPropertyExplorer> {
 	public boolean isEmbedded();
 
 	public void flush();
+
+	public boolean isFlushable();
 
 	public void setFlushable(boolean flushable);
 

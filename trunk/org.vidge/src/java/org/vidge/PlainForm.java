@@ -24,8 +24,8 @@ import org.vidge.controls.adapters.AbstractFieldAdapter;
 import org.vidge.controls.adapters.FieldAdapterList;
 import org.vidge.explorer.FormExplorer;
 import org.vidge.explorer.ObjectExplorer;
+import org.vidge.form.IForm;
 import org.vidge.inface.IEntityExplorer;
-import org.vidge.inface.IForm;
 import org.vidge.inface.IPropertyExplorer;
 import org.vidge.status.IStatusListener;
 import org.vidge.status.PropertyStatus;
@@ -83,7 +83,7 @@ public class PlainForm {
 			}
 		});
 		Collections.sort(controllerList);
-		inValidate();
+		inValidate(null);
 	}
 
 	public void refreshView() {
@@ -196,7 +196,8 @@ public class PlainForm {
 							e.gc.setForeground(color);
 							int width = valueControl.getLocation().x - controller.getNameControl().getLocation().x;
 							if ((width > 2) && (((Label) controller.getNameControl()).getText().length() > 0)) {
-								e.gc.drawRoundRectangle(2, controller.getNameControl().getLocation().y - 1, width, controller.getNameControl().getSize().y + 3, 8, 8);
+								e.gc.drawRoundRectangle(2, controller.getNameControl().getLocation().y - 1, width, controller.getNameControl()
+									.getSize().y + 3, 8, 8);
 							}
 						} catch (Exception e1) {
 						}
@@ -259,14 +260,14 @@ public class PlainForm {
 		listenerList.remove(listener);
 	}
 
-	public void inValidate() {
+	public void inValidate(PropertyController owner) {
 		StringBuilder builder = new StringBuilder();
 		int count = 1;
 		boolean valid = true;
 		for (int a = 0; a < controllerList.size(); a++) {
 			PropertyController controller = controllerList.get(a);
 			AbstractFieldAdapter fieldAdapter = controller.getFieldAdapter();
-			if (fieldAdapter != null && fieldAdapter.isVolatile()) {
+			if (fieldAdapter != null && !controller.equals(owner) && fieldAdapter.isVolatile()) {
 				fieldAdapter.inValidate();
 				if (!fieldAdapter.isValid()) {
 					builder.append(StringUtil.SP + count + StringUtil.DOTSP);
@@ -289,8 +290,8 @@ public class PlainForm {
 		return currentStatus;
 	}
 
-	public void statusChanged() {
-		inValidate();
+	public void statusChanged(PropertyController owner) {
+		inValidate(owner);
 		for (Object listener : listenerList.getListeners()) {
 			try {
 				((IStatusListener) listener).statusChanged(currentStatus);

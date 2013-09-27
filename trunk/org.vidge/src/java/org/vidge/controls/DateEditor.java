@@ -1,6 +1,5 @@
 package org.vidge.controls;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -24,11 +23,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.vidge.SharedImages;
 import org.vidge.VidgeResources;
+import org.vidge.VidgeSettings;
 import org.vidge.controls.calendar.CalendarDialog;
 
 public class DateEditor extends Composite {
 
-	private SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(" dd.MM.yyyy "); //$NON-NLS-1$
 	private Calendar calendar = Calendar.getInstance();
 	private Text text;
 	private CustomButton calendarButton;
@@ -96,7 +95,7 @@ public class DateEditor extends Composite {
 		if (object == null) {
 			text.setText(""); //$NON-NLS-1$
 		} else {
-			text.setText(DATE_FORMAT.format(object));
+			text.setText(VidgeSettings.formatDate((Date) object));
 		}
 	}
 

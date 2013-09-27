@@ -61,6 +61,12 @@ public class ListSelectPanel<F> {
 			selection.add(value);
 		section = new Section(parent, Section.TITLE_BAR);
 		section.setText(propertyExplorer == null ? "" : propertyExplorer.getValidator().getHelp());
+		// if (propertyExplorer.getEntityExplorer().getHeader() != null) {
+		// section.setText(propertyExplorer.getEntityExplorer().getHeader());
+		// }
+		if (propertyExplorer != null && propertyExplorer.getEntityExplorer().getDescription() == null) {
+			section.setDescription(propertyExplorer.getEntityExplorer().getDescription());
+		}
 		table = new VTable<F>(section, klass, list, SWT.CHECK);
 		section.setClient(table);
 		for (TableItem item : table.getTable().getItems()) {

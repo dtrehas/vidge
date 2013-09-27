@@ -14,9 +14,9 @@ import org.eclipse.swt.events.TreeEvent;
 import org.eclipse.swt.events.TreeListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.TreeItem;
-import org.vidge.VidgeResources;
 import org.vidge.SharedImages;
-import org.vidge.inface.INodeForm;
+import org.vidge.VidgeResources;
+import org.vidge.form.INodeForm;
 
 public class ObjectTreeModel {
 

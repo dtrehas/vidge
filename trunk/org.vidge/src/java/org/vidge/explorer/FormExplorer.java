@@ -14,17 +14,17 @@ import org.eclipse.ui.PlatformUI;
 import org.langcom.locale.LocalizedString;
 import org.vidge.VidgeException;
 import org.vidge.dialog.ObjectListSelectDialog;
-import org.vidge.inface.IColorForm;
+import org.vidge.form.IDialogForm;
+import org.vidge.form.IForm;
+import org.vidge.form.IFormAbstractFactory;
+import org.vidge.form.IFormDataProvider;
+import org.vidge.form.IFormFactory;
+import org.vidge.form.IFormInputChangeListener;
+import org.vidge.form.IFormView;
 import org.vidge.inface.IEntityExplorer;
-import org.vidge.inface.IForm;
-import org.vidge.inface.IFormAbstractFactory;
-import org.vidge.inface.IFormDataProvider;
-import org.vidge.inface.IFormFactory;
-import org.vidge.inface.IFormInputChangeListener;
-import org.vidge.inface.IFormView;
 import org.vidge.inface.IPropertyExplorer;
-import org.vidge.inface.ValueAction;
 import org.vidge.util.FormContextRule;
+import org.vidge.util.ValueAction;
 import org.vidge.util.VisualProperty;
 
 public class FormExplorer<T> extends EntityExplorer {
@@ -97,6 +97,22 @@ public class FormExplorer<T> extends EntityExplorer {
 			return ((LocalizedString) form.getInput()).getDefaultLocalString();
 		}
 		return form.getInput().toString();
+	}
+
+	@Override
+	public String getHeader() {
+		if (IDialogForm.class.isAssignableFrom(form.getClass())) {
+			return ((IDialogForm) form).getHeader();
+		}
+		return null;
+	}
+
+	@Override
+	public String getDescription() {
+		if (IDialogForm.class.isAssignableFrom(form.getClass())) {
+			return ((IDialogForm) form).getDescription();
+		}
+		return null;
 	}
 
 	@Override
@@ -275,17 +291,17 @@ public class FormExplorer<T> extends EntityExplorer {
 
 	@Override
 	public Color getBackground(Object element) {
-		if (IColorForm.class.isAssignableFrom(form.getClass())) {
-			return ((IColorForm) form).getBackground(element);
-		}
+		// if (IColorForm.class.isAssignableFrom(form.getClass())) {
+		// return ((IColorForm) form).getBackground(element);
+		// }
 		return null;
 	}
 
 	@Override
 	public Color getForeground(Object element) {
-		if (IColorForm.class.isAssignableFrom(form.getClass())) {
-			return ((IColorForm) form).getForeground(element);
-		}
+		// if (IColorForm.class.isAssignableFrom(form.getClass())) {
+		// return ((IColorForm) form).getForeground(element);
+		// }
 		return null;
 	}
 

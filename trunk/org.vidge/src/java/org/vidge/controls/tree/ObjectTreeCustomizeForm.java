@@ -1,6 +1,6 @@
 package org.vidge.controls.tree;
 
-import org.vidge.inface.IForm;
+import org.vidge.form.IForm;
 import org.vidge.util.VisualProperty;
 
 public class ObjectTreeCustomizeForm implements IForm<ObjectTree> {

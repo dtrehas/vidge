@@ -243,9 +243,9 @@ public class DayChooser extends Composite implements MouseListener, FocusListene
 	}
 
 	public void focusLost(FocusEvent event) {
-		DayControl selectedDay = getSelectedDayControl();
-		selectedDay.setBackground(getSelectionBackgroundColor());
-		selectedDay.setForeground(getSelectionForegroundColor());
+		// DayControl selectedDay = getSelectedDayControl();
+		// selectedDay.setBackground(getSelectionBackgroundColor());
+		// selectedDay.setForeground(getSelectionForegroundColor());
 	}
 
 	public void keyTraversed(TraverseEvent event) {
@@ -346,7 +346,11 @@ public class DayChooser extends Composite implements MouseListener, FocusListene
 	}
 
 	private DayControl getSelectedDayControl() {
-		return days[calendar.get(Calendar.DAY_OF_MONTH) - 1 - dayOffset];
+		int num = calendar.get(Calendar.DAY_OF_MONTH) - 1 - dayOffset;
+		if (num < 0) {
+			num = 0;
+		}
+		return days[num];
 	}
 
 	private Color getSelectionBackgroundColor() {

@@ -53,7 +53,7 @@ public class PartListEditorField<T> extends ObjectField<Object> {
 
 	@Override
 	protected void keyPressedInText() {
-		setSelectionInternal(new LocalizedString(text.getText()));
+		setSelection(new LocalizedString(text.getText()));
 	}
 
 	@Override

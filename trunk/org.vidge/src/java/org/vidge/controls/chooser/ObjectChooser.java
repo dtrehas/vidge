@@ -37,8 +37,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.vidge.SharedImages;
 import org.vidge.VidgeResources;
 import org.vidge.explorer.FormExplorer;
+import org.vidge.form.IForm;
 import org.vidge.inface.IEntityExplorer;
-import org.vidge.inface.IForm;
 
 @Deprecated
 public class ObjectChooser<T> {

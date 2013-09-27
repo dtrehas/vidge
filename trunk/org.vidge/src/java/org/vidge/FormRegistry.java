@@ -1,20 +1,32 @@
 package org.vidge;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
 import org.langcom.locale.LocalizedStringPart;
 import org.vidge.explorer.FormExplorer;
-import org.vidge.explorer.StringExplorer;
-import org.vidge.form.LocaleForm;
-import org.vidge.form.LocalizedStringPartForm2;
+import org.vidge.explorer.ObjectExplorer;
+import org.vidge.explorer.def.ColorExplorer;
+import org.vidge.explorer.def.DateExplorer;
+import org.vidge.explorer.def.FileExplorer;
+import org.vidge.explorer.def.FontExplorer;
+import org.vidge.explorer.def.ImageExplorer;
+import org.vidge.explorer.def.StringExplorer;
+import org.vidge.form.IForm;
+import org.vidge.form.impl.LocaleForm;
+import org.vidge.form.impl.LocalizedStringPartForm2;
 import org.vidge.inface.IEntityExplorer;
-import org.vidge.inface.IForm;
 import org.vidge.inface.IRegistryRequestListener;
 import org.vidge.util.FormContext;
+import org.vidge.util.TypeUtil;
 
 @SuppressWarnings({
 		"unchecked", "rawtypes"
@@ -23,8 +35,9 @@ public class FormRegistry {
 
 	private final static Map<Class<?>, IEntityExplorer> registry = new HashMap<Class<?>, IEntityExplorer>();
 	private final static Map<String, Map<Class<?>, IEntityExplorer>> contextRegistry = new HashMap<String, Map<Class<?>, IEntityExplorer>>();
-	private static String defaultContext = null;
+	private static String defaultContext = "DEFAULT";
 	private static final List<IRegistryRequestListener> listenerList = new ArrayList<IRegistryRequestListener>();
+	private final static Map<Class<?>, FormExplorer> formRegistry = new HashMap<Class<?>, FormExplorer>();
 	static {
 		registerForm(Locale.class, LocaleForm.class);
 		registerForm(LocalizedStringPart.class, LocalizedStringPartForm2.class);
@@ -49,25 +62,43 @@ public class FormRegistry {
 	}
 
 	public static <T> void registerExplorer(Class<? extends T> klass, IEntityExplorer explorer) {
-		registerContextExplorer(null, klass, explorer);
+		registerContextExplorer(defaultContext, klass, explorer);
 	}
 
 	public static <T> void registerForm(Class<? extends T> klass, Class<? extends IForm<? extends T>> form) {
-		registerContextExplorer(null, klass, new FormExplorer(form));
+		registerContextExplorer(defaultContext, klass, getExplorer(form));
+	}
+
+	private static FormExplorer getExplorer(Class formClass) {
+		FormExplorer explorer = formRegistry.get(formClass);
+		if (explorer == null) {
+			explorer = new FormExplorer(formClass);
+			formRegistry.put(formClass, explorer);
+		}
+		return explorer;
 	}
 
 	public static <T> void registerContextForm(String context, Class<? extends T> klass, Class<? extends IForm<? extends T>> form) {
-		registerContextExplorer(context, klass, new FormExplorer(form));
+		registerContextExplorer(context, klass, getExplorer(form));
 	}
 
-	public static IEntityExplorer getEntityExplorer(String context, Class<?> klass) {
+	public static IEntityExplorer getEntityExplorer(String context, Object obj) {
+		Class<?> klass = null;
+		try {
+			klass = TypeUtil.getClazz(obj);
+		} catch (ClassNotFoundException e) {
+			throw new VidgeException(e);
+		}
 		fireListenersChanged(context, klass);
+		// if (TypeUtil.isInnerType(klass)) {
+		// return getInnerExplorer(klass);
+		// }
 		Map<Class<?>, IEntityExplorer> map = contextRegistry.get(context);
 		if (map == null && context.equalsIgnoreCase(FormContext.CREATE.name())) {
 			map = contextRegistry.get(FormContext.EDIT.name());
 		}
-		if (map == null && context != null) {
-			map = contextRegistry.get(null);
+		if (map == null) {
+			map = contextRegistry.get(defaultContext);
 		}
 		IEntityExplorer result = null;
 		if (map != null) {
@@ -77,10 +108,30 @@ public class FormRegistry {
 			result = searchSimilar(klass);
 		}
 		if (result == null) {
-			return null;
-			// result = new ObjectExplorer(klass);
+			if (VidgeSettings.getUseObjectExplorer()) {
+				result = new ObjectExplorer(klass);
+			} else {
+				return null;
+			}
 		}
 		return result.copy();
+	}
+
+	private static IEntityExplorer getInnerExplorer(Class<?> klass) {
+		if (klass.equals(Date.class)) {
+			return new DateExplorer();
+		} else if ((klass.equals(Color.class))) {
+			return new ColorExplorer();
+		} else if ((klass.equals(Image.class))) {
+			return new ImageExplorer();
+		} else if ((klass.equals(Font.class))) {
+			return new FontExplorer();
+		} else if ((klass.equals(File.class))) {
+			return new FileExplorer();
+		} else if ((klass.equals(String.class))) {
+			return new StringExplorer();
+		}
+		return null;
 	}
 
 	public static IEntityExplorer getEntityExplorerTh(String context, Class<?> klass) {

@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
+import org.vidge.VidgeException;
 import org.vidge.controls.tree.hierarchy.IHierarchyProvider;
+import org.vidge.form.IForm;
+import org.vidge.form.IFormObjectWizard;
 import org.vidge.form.validator.IValidator;
 import org.vidge.form.validator.ReadOnlyValidator;
 import org.vidge.form.validator.RequiredValidator;
 import org.vidge.form.validator.ValidatorRegistry;
-import org.vidge.inface.IForm;
-import org.vidge.inface.IObjectWizard;
 import org.vidge.inface.IPropertyExplorer;
 import org.vidge.util.APropertyContext;
 import org.vidge.util.StringUtil;
@@ -43,7 +43,7 @@ public class PropertyExplorer extends AbstractPropertyExplorer {
 	private String propertyName;
 	private Method getValidator;
 	private IValidator<?> validator;
-	private IObjectWizard wizard;
+	private IFormObjectWizard wizard;
 	private Method setChecked;
 	private Method getChecked;
 	protected VisualProperty visualProperty;
@@ -70,6 +70,7 @@ public class PropertyExplorer extends AbstractPropertyExplorer {
 		}
 		getHierarchyProvider = exploreMethod(GET + propertyName + HIERARCHY_DATA_PROVIDER);
 		propertyName = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
+		getLabel();
 	}
 
 	@Override
@@ -111,11 +112,11 @@ public class PropertyExplorer extends AbstractPropertyExplorer {
 
 	@Override
 	public String getLabel() {
-		if (!visualProperty.name_visible()) {
-			return NN;
-		}
-		if (label == null) {
-			label = getMessage(visualProperty.label(), PROPERTY_LABEL_POSTFIX, StringUtil.capitalize(propertyName)) + (visualProperty.required() ? REQUIRED : NN);
+		if (visualProperty.name_visible()) {
+			if (label == null) {
+				label = getMessage(visualProperty.label(), PROPERTY_LABEL_POSTFIX, StringUtil.capitalize(propertyName))
+					+ (visualProperty.required() ? REQUIRED : NN);
+			}
 		}
 		return label;
 	}
@@ -133,7 +134,10 @@ public class PropertyExplorer extends AbstractPropertyExplorer {
 		}
 		String value = defaultValue;
 		try {
-			value = ResourceBundle.getBundle(source.getClass().getPackage().getName() + MESSAGES, Locale.getDefault(), source.getClass().getClassLoader()).getString(key);
+			value = ResourceBundle.getBundle(
+				source.getClass().getPackage().getName() + MESSAGES,
+				Locale.getDefault(),
+				source.getClass().getClassLoader()).getString(key);
 		} catch (java.util.MissingResourceException e) {
 			value = defaultValue;
 		}
@@ -215,8 +219,10 @@ public class PropertyExplorer extends AbstractPropertyExplorer {
 			try {
 				return method.invoke(source, args);
 			} catch (Exception e) {
-				e.printStackTrace();
-				Logger.getLogger(this.getClass().getName()).severe(e.getMessage());
+				// VidgeErrorDialog.open(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Error", e.getMessage(), e);
+				throw new VidgeException(e);
+				// e.printStackTrace();
+				// Logger.getLogger(this.getClass().getName()).severe(method + " - " + args.length + "=" + e.getMessage());
 			}
 		}
 		return null;
@@ -231,9 +237,9 @@ public class PropertyExplorer extends AbstractPropertyExplorer {
 		return null;
 	}
 
-	public IObjectWizard getWizard() {
+	public IFormObjectWizard getWizard() {
 		if ((getNewWizard != null) && (wizard == null)) {
-			wizard = (IObjectWizard) invokeInternal(getNewWizard);
+			wizard = (IFormObjectWizard) invokeInternal(getNewWizard);
 		}
 		return wizard;
 	}

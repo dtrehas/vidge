@@ -7,10 +7,10 @@ import java.util.List;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.vidge.controls.tree.hierarchy.IHierarchyProvider;
+import org.vidge.form.IFormObjectWizard;
 import org.vidge.form.validator.IValidator;
 import org.vidge.form.validator.ValidatorRegistry;
 import org.vidge.inface.IEntityExplorer;
-import org.vidge.inface.IObjectWizard;
 import org.vidge.inface.IPropertyExplorer;
 import org.vidge.util.StringUtil;
 import org.vidge.util.VisualControlType;
@@ -161,6 +161,11 @@ public abstract class AbstractPropertyExplorer implements IPropertyExplorer {
 		return null;
 	}
 
+	@Override
+	public boolean isFlushable() {
+		return flushable;
+	}
+
 	public IHierarchyProvider<?> getHierarchyProvider() {
 		return null;
 	}
@@ -173,7 +178,7 @@ public abstract class AbstractPropertyExplorer implements IPropertyExplorer {
 		return null;
 	}
 
-	public IObjectWizard getWizard() {
+	public IFormObjectWizard getWizard() {
 		return null;
 	}
 
@@ -220,5 +225,10 @@ public abstract class AbstractPropertyExplorer implements IPropertyExplorer {
 	@Override
 	public IEntityExplorer getEntityExplorer() {
 		return entityExplorer;
+	}
+
+	@Override
+	public String toString() {
+		return label;
 	}
 }

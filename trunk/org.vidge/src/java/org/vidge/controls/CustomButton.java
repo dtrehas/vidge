@@ -109,18 +109,14 @@ public class CustomButton {
 	}
 
 	private void fireButtonSelected() {
-		try {
-			if (enabled) {
-				selected = !selected;
-				for (SelectionListener listener : listeners) {
-					Event event = new Event();
-					event.widget = label;
-					listener.widgetSelected(new SelectionEvent(event));
-					listener.widgetDefaultSelected(new SelectionEvent(event));
-				}
+		if (enabled) {
+			selected = !selected;
+			for (SelectionListener listener : listeners) {
+				Event event = new Event();
+				event.widget = label;
+				listener.widgetSelected(new SelectionEvent(event));
+				listener.widgetDefaultSelected(new SelectionEvent(event));
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 

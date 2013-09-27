@@ -14,8 +14,8 @@ import org.vidge.SharedImages;
 import org.vidge.VidgeResources;
 import org.vidge.controls.editor.ObjectEditor;
 import org.vidge.dialog.SingleObjectDialog;
+import org.vidge.form.IFormObjectWizard;
 import org.vidge.inface.IEntityExplorer;
-import org.vidge.inface.IObjectWizard;
 import org.vidge.util.FormContext;
 
 public class ObjectWizardField<T> extends ObjectEditor<T> {
@@ -67,7 +67,7 @@ public class ObjectWizardField<T> extends ObjectEditor<T> {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				IObjectWizard wizard = controller.getExplorer().getWizard();
+				IFormObjectWizard wizard = controller.getExplorer().getWizard();
 				if (wizard != null) {
 					Object open = wizard.open(controller.getExplorer().getValue());
 					if (open != null) {
