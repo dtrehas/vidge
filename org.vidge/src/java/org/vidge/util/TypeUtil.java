@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.graphics.Color;
@@ -47,6 +48,15 @@ public class TypeUtil {
 			value = ((File) value).getPath();
 		}
 		return value;
+	}
+
+	public static boolean isCollection(Class<?> klass) {
+		if (klass != null) {
+			if (List.class.isAssignableFrom(klass) || Map.class.isAssignableFrom(klass) || klass.isArray()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@SuppressWarnings({
@@ -122,10 +132,12 @@ public class TypeUtil {
 
 	public static boolean isPrimitive(Class<?> klass) {
 		if (klass != null) {
-			if (klass.equals(String.class) || klass.equals(Integer.class) || klass.equals(Long.class) || klass.equals(Character.class) || klass.equals(Boolean.class) || klass.equals(Object.class)
-				|| klass.equals(BigDecimal.class) || klass.equals(Date.class) || klass.equals(Double.class) || klass.equals(Float.class) || klass.equals(BigInteger.class) || klass.equals(Byte.class)
-				|| klass.equals(int.class) || klass.equals(double.class) || klass.equals(float.class) || klass.equals(boolean.class) || klass.equals(long.class) || klass.equals(char.class)
-				|| klass.equals(byte.class) || klass.equals(byte[].class) || klass.equals(char[].class) || klass.equals(void.class) || klass.isEnum()) {
+			if (klass.equals(String.class) || klass.equals(Integer.class) || klass.equals(Long.class) || klass.equals(Character.class)
+				|| klass.equals(Boolean.class) || klass.equals(Object.class) || klass.equals(BigDecimal.class) || klass.equals(Date.class)
+				|| klass.equals(Double.class) || klass.equals(Float.class) || klass.equals(BigInteger.class) || klass.equals(Byte.class)
+				|| klass.equals(int.class) || klass.equals(double.class) || klass.equals(float.class) || klass.equals(boolean.class)
+				|| klass.equals(long.class) || klass.equals(char.class) || klass.equals(byte.class) || klass.equals(byte[].class)
+				|| klass.equals(char[].class) || klass.equals(void.class) || klass.isEnum()) {
 				return true;
 			}
 		}
@@ -134,8 +146,9 @@ public class TypeUtil {
 
 	private static boolean isTextControl(Class<?> klass) {
 		if (klass != null) {
-			if (klass.equals(String.class) || klass.equals(Integer.class) || klass.equals(Long.class) || klass.equals(Character.class) || klass.equals(BigDecimal.class) || klass.equals(Double.class)
-				|| klass.equals(Float.class) || klass.equals(BigInteger.class) || klass.equals(Byte.class) || klass.equals(int.class) || klass.equals(double.class) || klass.equals(float.class)
+			if (klass.equals(String.class) || klass.equals(Integer.class) || klass.equals(Long.class) || klass.equals(Character.class)
+				|| klass.equals(BigDecimal.class) || klass.equals(Double.class) || klass.equals(Float.class) || klass.equals(BigInteger.class)
+				|| klass.equals(Byte.class) || klass.equals(int.class) || klass.equals(double.class) || klass.equals(float.class)
 				|| klass.equals(long.class) || klass.equals(char.class) || klass.equals(byte.class) || klass.isEnum()) {
 				return true;
 			}
@@ -145,8 +158,9 @@ public class TypeUtil {
 
 	public static boolean isNumeric(Class<?> klass) {
 		if (klass != null) {
-			if (klass.equals(Integer.class) || klass.equals(Long.class) || klass.equals(BigDecimal.class) || klass.equals(Double.class) || klass.equals(Float.class) || klass.equals(BigInteger.class)
-				|| klass.equals(int.class) || klass.equals(double.class) || klass.equals(float.class) || klass.equals(long.class)) {
+			if (klass.equals(Integer.class) || klass.equals(Long.class) || klass.equals(BigDecimal.class) || klass.equals(Double.class)
+				|| klass.equals(Float.class) || klass.equals(BigInteger.class) || klass.equals(int.class) || klass.equals(double.class)
+				|| klass.equals(float.class) || klass.equals(long.class)) {
 				return true;
 			}
 		}
@@ -192,6 +206,16 @@ public class TypeUtil {
 		return null;
 	}
 
+	public static Class<? extends Object> getClazz(Object obj) throws ClassNotFoundException {
+		Class<? extends Object> clazz = null;
+		if (obj instanceof Class<?>) {
+			clazz = (Class<?>) obj;
+		} else {
+			clazz = obj.getClass();
+		}
+		return clazz;
+	}
+
 	public static Class<?> resolveClass(Method method, Class<?> returnType) {
 		return getType(method.getGenericReturnType(), returnType);
 	}
@@ -219,5 +243,20 @@ public class TypeUtil {
 			}
 		}
 		return clazz;
+	}
+
+	public static boolean isInnerType(Class<?> klass) {
+		if (klass.equals(Date.class)) {
+			return true;
+		} else if ((klass.equals(Color.class))) {
+			return true;
+		} else if ((klass.equals(Image.class))) {
+			return true;
+		} else if ((klass.equals(Font.class))) {
+			return true;
+		} else if ((klass.equals(File.class))) {
+			return true;
+		}
+		return false;
 	}
 }

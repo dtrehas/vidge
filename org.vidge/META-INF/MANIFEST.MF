@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.vidge
 Bundle-SymbolicName: org.vidge;singleton:=true
-Bundle-Version: 2.0
-Bundle-Vendor: Vidge.org
+Bundle-Version: 2.2
+Bundle-Vendor: sergey sukhotskiy   sukhotskiy@gmail.com
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
@@ -18,9 +18,12 @@ Export-Package: org.vidge,
  org.vidge.controls.editor,
  org.vidge.controls.tree,
  org.vidge.controls.tree.hierarchy,
+ org.vidge.details,
  org.vidge.dialog,
  org.vidge.explorer,
+ org.vidge.explorer.def,
  org.vidge.form,
+ org.vidge.form.impl,
  org.vidge.form.validator,
  org.vidge.inface,
  org.vidge.job,

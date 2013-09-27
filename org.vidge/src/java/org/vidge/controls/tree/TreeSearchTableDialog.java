@@ -18,11 +18,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.vidge.VidgeResources;
 import org.vidge.SharedImages;
+import org.vidge.VidgeResources;
 import org.vidge.controls.chooser.ObjectChooser;
-import org.vidge.inface.IForm;
-import org.vidge.inface.INodeForm;
+import org.vidge.form.IForm;
+import org.vidge.form.INodeForm;
 import org.vidge.util.PositionUtillity;
 
 public class TreeSearchTableDialog extends Dialog {

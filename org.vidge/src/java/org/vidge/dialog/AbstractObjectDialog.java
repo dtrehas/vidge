@@ -7,7 +7,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.PlatformUI;
-import org.vidge.explorer.StringExplorer;
+import org.vidge.explorer.def.StringExplorer;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IObjectDialog;
 import org.vidge.util.PositionUtillity;
@@ -45,8 +45,15 @@ public abstract class AbstractObjectDialog<F> extends TitleAreaDialog implements
 			size = DEFAULT_SIZE;
 		}
 		parent.setSize(size);
-		if (title != null) {
-			this.getShell().setText(title);
+		if (explorer.getHeader() == null) {
+			if (title != null) {
+				this.getShell().setText(title);
+			}
+		} else {
+			this.getShell().setText(explorer.getHeader());
+		}
+		if (explorer.getDescription() == null) {
+			setMessage(explorer.getDescription());
 		}
 		PositionUtillity.center(parent);
 		Control control = super.createContents(parent);

@@ -21,11 +21,33 @@ import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IObjectDialog;
 import org.vidge.util.FormContext;
 import org.vidge.util.TypeUtil;
+import org.vidge.util.ValueAction;
 
 public class ObjectEditor<T> extends ObjectField<T> {
 
+	private EditorContent contentType;
+
 	public ObjectEditor(Composite parent, int style, PropertyController controller) {
 		super(parent, style, controller);
+		Class<?> propertyClass = controller.getExplorer().getPropertyClass();
+		if (List.class.isAssignableFrom(propertyClass)) {
+			lazy = true;
+			contentType = EditorContent.LIST;
+		} else if (Map.class.isAssignableFrom(propertyClass)) {
+			lazy = true;
+			contentType = EditorContent.MAP;
+		} else if (propertyClass.isArray()) {
+			lazy = true;
+			contentType = EditorContent.ARRAY;
+		} else {
+			contentType = EditorContent.OBJECT;
+		}
+	}
+
+	@Override
+	protected void initSelection(PropertyController controller) {
+		if (!lazy)
+			super.initSelection(controller);
 	}
 
 	@SuppressWarnings({
@@ -33,40 +55,56 @@ public class ObjectEditor<T> extends ObjectField<T> {
 	})
 	@Override
 	protected void showDialog() {
+		if (lazy) {
+			super.initSelection(controller);
+		}
 		IObjectDialog<T> dialog = null;
+		IEntityExplorer explorer = null;
 		Class<?> propertyClass = controller.getExplorer().getPropertyClass();
 		Type propertyType = TypeUtil.getGenericClass(controller.getExplorer().getPropertyClass(), controller.getExplorer().getPropertyType());
 		if (!propertyClass.equals(propertyType)) {
-			IEntityExplorer explorer = TypeUtil.getExplorer(TypeUtil.getType(propertyType, propertyClass), FormContext.EDIT.name(), controller.getExplorer());
-			explorer.setContext(controller.getExplorer().getEntityExplorer().getInput());
 			if (List.class.isAssignableFrom(propertyClass) || Map.class.isAssignableFrom(propertyClass) || propertyClass.isArray()) {
 				if (controller.getExplorer().hasHierarchyProvider()) {
+					explorer = TypeUtil.getExplorer(TypeUtil.getType(propertyType, propertyClass), FormContext.TREE.name(), controller.getExplorer());
+					explorer.setContext(controller.getExplorer().getEntityExplorer().getInput());
 					dialog = new ObjectTreeEditorDialog(controller.getExplorer().getLabel(), controller.getExplorer().getHierarchyProvider());
 				} else if (controller.getExplorer().hasValidValues()) {
+					explorer = TypeUtil
+						.getExplorer(TypeUtil.getType(propertyType, propertyClass), FormContext.TABLE.name(), controller.getExplorer());
+					explorer.setContext(controller.getExplorer().getEntityExplorer().getInput());
 					dialog = new ObjectListSelectDialog(controller.getExplorer().getLabel(), explorer, controller.getExplorer(), false);
 				} else {
+					explorer = TypeUtil
+						.getExplorer(TypeUtil.getType(propertyType, propertyClass), FormContext.TABLE.name(), controller.getExplorer());
+					explorer.setContext(controller.getExplorer().getEntityExplorer().getInput());
 					dialog = new ObjectListDialog(controller.getExplorer().getLabel(), explorer, controller.getExplorer());
 				}
 			} else {
+				explorer = TypeUtil.getExplorer(TypeUtil.getType(propertyType, propertyClass), FormContext.EDIT.name(), controller.getExplorer());
+				explorer.setContext(controller.getExplorer().getEntityExplorer().getInput());
 				dialog = new SingleObjectDialog<T>(explorer, controller.getExplorer().getLabel(), null);
 			}
 		} else {
-			IEntityExplorer explorer = TypeUtil.getExplorer(propertyClass, FormContext.EDIT.name(), controller.getExplorer());
-			explorer.setContext(controller.getExplorer().getEntityExplorer().getInput());
 			if (controller.getExplorer().hasHierarchyProvider()) {
+				explorer = TypeUtil.getExplorer(TypeUtil.getType(propertyType, propertyClass), FormContext.TREE.name(), controller.getExplorer());
+				explorer.setContext(controller.getExplorer().getEntityExplorer().getInput());
 				dialog = new ObjectTreeEditorDialog(controller.getExplorer().getLabel(), controller.getExplorer().getHierarchyProvider());
 			} else if (controller.getExplorer().hasValidValues()) {
+				explorer = TypeUtil.getExplorer(TypeUtil.getType(propertyType, propertyClass), FormContext.TABLE.name(), controller.getExplorer());
+				explorer.setContext(controller.getExplorer().getEntityExplorer().getInput());
 				dialog = new ObjectListSelectDialog(controller.getExplorer().getLabel(), explorer, controller.getExplorer(), true);
 			} else {
-				Object value = controller.getExplorer().getValue();
-				if (value != null) {
-					explorer.explore(value);
+				explorer = TypeUtil.getExplorer(TypeUtil.getType(propertyType, propertyClass), FormContext.EDIT.name(), controller.getExplorer());
+				explorer.setContext(controller.getExplorer().getEntityExplorer().getInput());
+				if (getSelection() != null) {
+					explorer.explore(getSelection());
 				}
 				dialog = new SingleObjectDialog<T>(explorer, controller.getExplorer().getLabel(), null);
 			}
 		}
 		if (dialog.open() == Window.OK) {
 			T selection2 = dialog.getSelection();
+			explorer.doInputChanged(selection, ValueAction.CHANGED, controller.getExplorer().getLabel());
 			if (selection2 != null) {
 				if (List.class.isAssignableFrom(propertyClass)) {
 					setSelection(selection2);
@@ -85,19 +123,21 @@ public class ObjectEditor<T> extends ObjectField<T> {
 					}
 					setSelection((T) array);
 				} else {
-					T obj = selection2;
-					if (List.class.isAssignableFrom(obj.getClass())) {
-						if (((List) obj).size() > 0) {
-							setSelection((T) ((List) obj).get(0));
+					if (List.class.isAssignableFrom(selection2.getClass())) {
+						if (((List) selection2).size() > 0) {
+							setSelection((T) ((List) selection2).get(0));
 						} else {
 							setSelection(null);
 						}
 					} else {
-						setSelection(obj);
+						if (!dialog.getClass().equals(ObjectTreeEditorDialog.class)) {
+							setSelection(selection2);
+						}
 					}
 				}
 			}
 			controller.inValidate();
+			refresh(getSelection());
 		}
 	}
 
@@ -117,5 +157,13 @@ public class ObjectEditor<T> extends ObjectField<T> {
 	@Override
 	protected IObjectDialog<T> getDialog() {
 		return null;
+	}
+
+	public boolean getLazy() {
+		return lazy;
+	}
+
+	public EditorContent getContentType() {
+		return contentType;
 	}
 }

@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ColumnLayoutData;
 import org.eclipse.jface.viewers.ColumnPixelData;
@@ -25,6 +26,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -65,6 +67,7 @@ public class VTable<T> extends Composite {
 	protected int from = 0, count = 0, addNum = 1;
 	protected String[] columnStrings = new String[0];
 	protected DefaultTableComparator<T> comparator = new DefaultTableComparator<T>();
+	private Menu popupMenu;
 
 	public VTable(Composite parent, Class<T> objClass, List<T> listIn, int style, DefaultTableComparator<T> comparator) {
 		this(parent, objClass, listIn, style);
@@ -415,7 +418,8 @@ public class VTable<T> extends Composite {
 	}
 
 	protected Menu createMenuInt() {
-		final Menu popupMenu = new Menu(table.getShell(), SWT.POP_UP);
+		popupMenu = new Menu(table.getShell(), SWT.POP_UP);
+		new MenuItem(popupMenu, SWT.SEPARATOR);
 		MenuItem menuItem = new MenuItem(popupMenu, SWT.CHECK);
 		menuItem.setText(Messages.ObjectChooser_FILTERED);
 		menuItem.addSelectionListener(new SelectionAdapter() {
@@ -504,5 +508,31 @@ public class VTable<T> extends Composite {
 
 	public PageManager getPageManager() {
 		return pageManager;
+	}
+
+	public void addContextMenu(final Action action, int index) {
+		MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH, index);
+		menuItem.setText(action.getText());
+		menuItem.setImage(action.getImageDescriptor().createImage());
+		menuItem.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				action.run();
+			}
+		});
+	}
+
+	public void addContextMenu(Image image, String text, int index, final Runnable runnable) {
+		MenuItem menuItem = new MenuItem(popupMenu, SWT.PUSH, index);
+		menuItem.setText(text);
+		menuItem.setImage(image);
+		menuItem.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				runnable.run();
+			}
+		});
 	}
 }

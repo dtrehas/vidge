@@ -23,12 +23,12 @@ import org.vidge.VidgeResources;
 import org.vidge.controls.chooser.ObjectChooser;
 import org.vidge.dialog.SingleObjectDialog;
 import org.vidge.explorer.FormExplorer;
+import org.vidge.form.IForm;
 import org.vidge.inface.IChangeListener;
 import org.vidge.inface.IEntityExplorer;
-import org.vidge.inface.IForm;
 import org.vidge.inface.IObjectDialog;
-import org.vidge.inface.ValueAction;
 import org.vidge.util.FormContext;
+import org.vidge.util.ValueAction;
 
 @SuppressWarnings("rawtypes")
 public class RTablePanel<T> {

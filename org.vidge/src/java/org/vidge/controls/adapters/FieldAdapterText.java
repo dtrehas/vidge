@@ -25,9 +25,15 @@ public class FieldAdapterText extends AbstractFieldAdapter implements KeyListene
 
 	@Override
 	protected void createControl(Composite parent) {
-		text = new TextField(parent, ((controller.getControlType() == VisualControlType.TEXTAREA) ? (SWT.WRAP | SWT.MULTI) : SWT.SINGLE), controller);
+		text = new TextField(parent, ((controller.getControlType() == VisualControlType.TEXTAREA) ? (SWT.WRAP | SWT.MULTI | SWT.V_SCROLL)
+			: SWT.SINGLE), controller);
 		if (controller.getControlType() == VisualControlType.TEXTAREA) {
-			text.setLayoutData(new GridData(GridData.FILL_BOTH));
+			GridData layoutData = new GridData(GridData.FILL_BOTH);
+			if (controller.getExplorer().getVisualAreaHeight() > 0)
+				layoutData.heightHint = controller.getExplorer().getVisualAreaHeight();
+			if (controller.getExplorer().getVisualAreaWidth() > 0)
+				layoutData.widthHint = controller.getExplorer().getVisualAreaWidth();
+			text.setLayoutData(layoutData);
 		} else {
 			text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		}
@@ -40,6 +46,21 @@ public class FieldAdapterText extends AbstractFieldAdapter implements KeyListene
 		valid = validator.validateComplete(visualValue == null ? "" : visualValue.toString());
 		explorer.setValue(validator.getMarshalledValue());
 		controller.inValidate();
+	}
+
+	@Override
+	public void inValidate() {
+		super.inValidate();
+		if (!isEnabled() || explorer.getEntityExplorer().getInput() == null) {
+			return;
+		}
+		text.removeModifyListener(this);
+		if (getVisualValue() != null) {
+			if (!getVisualValue().equals(validator.getMarshalledValue())) {
+				setVisualValue(validator.getMarshalledValue());
+			}
+		}
+		text.addModifyListener(this);
 	}
 
 	@Override

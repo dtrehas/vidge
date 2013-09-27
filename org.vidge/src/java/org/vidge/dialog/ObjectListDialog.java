@@ -1,5 +1,6 @@
 package org.vidge.dialog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -13,25 +14,27 @@ import org.vidge.inface.IPropertyExplorer;
 
 public class ObjectListDialog<F> extends AbstractSimpleDialog<List<F>> {
 
-	private final IPropertyExplorer propertyExplorer;
 
 	public ObjectListDialog(String title, IEntityExplorer entityExplorer, IPropertyExplorer propertyExplorer) {
-		super(entityExplorer, title, DEFAULT_SIZE);
-		this.propertyExplorer = propertyExplorer;
+		super(entityExplorer, title, DEFAULT_SIZE,propertyExplorer);
 	}
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
+		createButton(parent, IDialogConstants.CLOSE_ID, IDialogConstants.CLOSE_LABEL, true);
 	}
 
 	@Override
 	protected void buttonPressed(int buttonId) {
-		if (IDialogConstants.OK_ID == buttonId) {
-			okPressed();
-		} else if (IDialogConstants.CANCEL_ID == buttonId) {
-			cancelPressed();
+		okPressed();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void setSelection() {
+		selection = (List<F>) propertyExplorer.getValue();
+		if (selection == null) {
+			selection = new ArrayList<F>();
 		}
 	}
 

@@ -26,9 +26,9 @@ import org.vidge.controls.chooser.VTable;
 import org.vidge.inface.IChangeListener;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IPropertyExplorer;
-import org.vidge.inface.ValueAction;
 import org.vidge.util.FormContext;
 import org.vidge.util.TypeUtil;
+import org.vidge.util.ValueAction;
 
 public class ListPanel<F> {
 
@@ -57,6 +57,12 @@ public class ListPanel<F> {
 		section = new Section(parent, Section.TITLE_BAR);
 		section.setTextClient(getClient(section));
 		section.setText(propertyExplorer.getValidator().getHelp());
+		if (explorer.getHeader() != null) {
+			section.setText(explorer.getHeader());
+		}
+		if (explorer.getDescription() == null) {
+			section.setDescription(explorer.getDescription());
+		}
 		table = new VTable<F>(section, klass, selection, SWT.NONE);
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
 		table.addDoubleClickListener(new IDoubleClickListener() {
@@ -67,6 +73,27 @@ public class ListPanel<F> {
 				if (selectionItem != null) {
 					editItem();
 				}
+			}
+		});
+		table.addContextMenu(VidgeResources.getInstance().getImage(SharedImages.ACTION_PLUS), "Add", 0, new Runnable() {
+
+			@Override
+			public void run() {
+				addItem();
+			}
+		});
+		table.addContextMenu(VidgeResources.getInstance().getImage(SharedImages.ACTION_MINUS), "Delete", 1, new Runnable() {
+
+			@Override
+			public void run() {
+				removeItem();
+			}
+		});
+		table.addContextMenu(VidgeResources.getInstance().getImage(SharedImages.ACTION_EDIT), "Edit", 2, new Runnable() {
+
+			@Override
+			public void run() {
+				editItem();
 			}
 		});
 		section.setClient(table);
@@ -149,10 +176,11 @@ public class ListPanel<F> {
 		}
 		SingleObjectDialog<F> dialog = new SingleObjectDialog<F>(addExplorer, Messages.ObjectListDialog_3, null);
 		if (dialog.open() == Window.OK) {
-			selection.add(dialog.getSelection());
-			table.setInput(selection);
 			propertyExplorer.getValidator().validateComplete(selection);
 			section.setText(propertyExplorer.getValidator().getHelp());
+			selection.add((F) explorer.doInputChanged(dialog.getSelection(), ValueAction.SAVE, propertyName));
+			// selection.add(dialog.getSelection());
+			table.setInput(selection);
 			fireTableChanged();
 		}
 	}
@@ -160,9 +188,14 @@ public class ListPanel<F> {
 	private void removeItem() {
 		F selectionItem = table.getSelection();
 		if (selectionItem == null) {
-			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), Messages.ObjectListDialog_4, Messages.ObjectListDialog_5);
+			MessageDialog.openInformation(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				Messages.ObjectListDialog_4,
+				Messages.ObjectListDialog_5);
 		} else {
-			if (MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Remove Item", Messages.ObjectListDialog_6 + selectionItem + " ?")) { //$NON-NLS-1$ //$NON-NLS-3$
+			if (MessageDialog.openConfirm(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				"Remove Item", Messages.ObjectListDialog_6 + selectionItem + " ?")) { //$NON-NLS-1$ //$NON-NLS-3$
 				selection.remove(selectionItem);
 				propertyExplorer.getValidator().validateComplete(selection);
 				section.setText(propertyExplorer.getValidator().getHelp());
@@ -176,7 +209,10 @@ public class ListPanel<F> {
 	private void editItem() {
 		F selectionItem = table.getSelection();
 		if (selectionItem == null) {
-			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), Messages.ObjectListDialog_8, Messages.ObjectListDialog_9);
+			MessageDialog.openInformation(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				Messages.ObjectListDialog_8,
+				Messages.ObjectListDialog_9);
 		} else {
 			editExplorer.explore(selectionItem);
 			SingleObjectDialog<F> dialog = new SingleObjectDialog<F>(editExplorer, Messages.ObjectListDialog_10);
@@ -187,6 +223,7 @@ public class ListPanel<F> {
 				propertyExplorer.getValidator().validateComplete(selection);
 				section.setText(propertyExplorer.getValidator().getHelp());
 				table.refresh();
+				explorer.doInputChanged(dialog.getSelection(), ValueAction.UPDATE, propertyName);
 				fireTableChanged();
 			}
 		}
@@ -202,5 +239,9 @@ public class ListPanel<F> {
 
 	public void setEnabled(boolean enabled) {
 		table.setEnabled(enabled);
+	}
+
+	public Section getSection() {
+		return section;
 	}
 }

@@ -19,6 +19,13 @@ public class Messages extends NLS {
 	public static String ObjectListDialog_8;
 	public static String ObjectListDialog_9;
 	public static String ResourceDialog_Open;
+	public static String LogicTreeDialog_1;
+	public static String LogicTreeDialog_2;
+	public static String LogicTreeDialog_3;
+	public static String LogicTreeDialog_4;
+	public static String LogicTreeDialog_5;
+	public static String LogicTreeDialog_6;
+	public static String LogicTreeDialog_0;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

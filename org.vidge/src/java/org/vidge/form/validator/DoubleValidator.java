@@ -16,7 +16,9 @@ public class DoubleValidator implements IValidator<Double> {
 	public boolean validateComplete(Object value) {
 		help = HELP;
 		try {
-			newValue = Double.parseDouble(StringUtil.toString(value));
+			if (value != null) {
+				newValue = Double.parseDouble(StringUtil.toString(value));
+			}
 			return true;
 		} catch (Exception e) {
 			help = e.getMessage();

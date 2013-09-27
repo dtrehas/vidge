@@ -23,6 +23,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
@@ -36,36 +37,48 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.langcom.locale.LocalizedString;
 import org.vidge.FormRegistry;
 import org.vidge.SharedImages;
+import org.vidge.Vidge;
+import org.vidge.VidgeException;
 import org.vidge.VidgeResources;
+import org.vidge.controls.editor.ListEditor;
+import org.vidge.controls.editor.ListEditorInput;
 import org.vidge.dialog.ObjectListDialog;
 import org.vidge.dialog.SingleObjectDialog;
-import org.vidge.explorer.StringExplorer;
+import org.vidge.explorer.def.StringExplorer;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IObjectDialog;
 import org.vidge.inface.IPropertyExplorer;
-import org.vidge.inface.ValueAction;
 import org.vidge.util.FormContext;
 import org.vidge.util.TypeUtil;
+import org.vidge.util.ValueAction;
 
 @SuppressWarnings("rawtypes")
 public class TreePanel {
 
 	private static final String TREE_VIEW_OF = "Structure of ";
 	private static final String SELECTED = " Selected:  ";
+	public static final int LIST_TO_EDITOR = Vidge.ALLACTIONS << 7 << 2;
 	private Tree tree;
 	private Section section;
 	private IEntityExplorer expIn;
 	private String title;
 	private NodeBundle selected;
 	private NodeBundle root;
+	private int style = 0;
 
 	public TreePanel(Object rootObject) {
+		setRoot(rootObject);
+	}
+
+	public TreePanel(Object rootObject, int style) {
+		this.style = style;
 		setRoot(rootObject);
 	}
 
@@ -87,8 +100,8 @@ public class TreePanel {
 		if (object == null) {
 			return null;
 		}
-		IEntityExplorer entityExplorer = FormRegistry.getEntityExplorer(context.name(), object.getClass());
-		if (entityExplorer == null) {
+		IEntityExplorer entityExplorer = FormRegistry.getEntityExplorer(context.name(), object);
+		if (entityExplorer == null || object.getClass().equals(Class.class)) {
 			return null;
 		}
 		entityExplorer.explore(object);
@@ -99,10 +112,7 @@ public class TreePanel {
 		IEntityExplorer entityExplorer = null;
 		NodeBundle nodeBundle = (NodeBundle) item.getData();
 		if (nodeBundle.value == null) {
-			TreeItem parentItem = item.getParentItem();
-			IEntityExplorer parentEx = getExplorer(context, (NodeBundle) parentItem.getData());
-			IPropertyExplorer propertyExplorer = parentEx.getProperty(nodeBundle.propertyName);
-			entityExplorer = FormRegistry.getEntityExplorer(context.name(), propertyExplorer.getPropertyClass());
+			entityExplorer = FormRegistry.getEntityExplorer(context.name(), nodeBundle.clazz);
 		} else {
 			entityExplorer = FormRegistry.getEntityExplorer(context.name(), nodeBundle.value.getClass());
 			if (entityExplorer != null) {
@@ -277,6 +287,7 @@ public class TreePanel {
 					item.setItemCount(explorer.getPropertyList().size());
 					item.setImage(VidgeResources.getInstance().getImage(SharedImages.OBJECTS));
 					item.setData(root);
+					item.setExpanded(true);
 				} else {
 					NodeBundle bundle = (NodeBundle) parentItem.getData();
 					if (bundle.isCollection) {
@@ -302,7 +313,7 @@ public class TreePanel {
 				NodeBundle nodeBundle = new NodeBundle(value, null);
 				nodeBundle.value = value;
 				item.setData(nodeBundle);
-				item.setImage(VidgeResources.getInstance().getImage(SharedImages.OBJECTS));
+				item.setImage(obtainImage(value, VidgeResources.getInstance().getImage(SharedImages.OBJECTS)));
 				item.setText(obtainStr(value));
 				propertyClass = ((NodeBundle) parentItem.getData()).propertyType;
 				if (!TypeUtil.isPrimitive(propertyClass)) {
@@ -315,7 +326,7 @@ public class TreePanel {
 
 			private String obtainStr(Object value) {
 				String result = "";
-				if (value == null || value.toString().equalsIgnoreCase("null")) {
+				if (value == null || value.toString() == null || value.toString().equalsIgnoreCase("null")) {
 					return result;
 				}
 				if (LocalizedString.class.isAssignableFrom(value.getClass())) {
@@ -347,36 +358,41 @@ public class TreePanel {
 				Object value = propertyExplorer.getValue();
 				if (value == null) {
 					item.setText(propertyExplorer.getLabel());
-					item.setImage(VidgeResources.getInstance().getImage(SharedImages.BALL));
+					item.setImage(VidgeResources.getInstance().getImage(SharedImages.BSQUARE));
 					item.setItemCount(0);
+					Class<?> propertyClass = propertyExplorer.getPropertyClass();
+					Class propertyType = TypeUtil.getGenericClass(propertyClass, propertyExplorer.getPropertyType());
+					NodeBundle nodeBundle = new NodeBundle(propertyExplorer.getPropertyName(), propertyType);
+					// nodeBundle.value = value;
+					item.setData(nodeBundle);
 					return;
 				}
 				Class<?> propertyClass = propertyExplorer.getPropertyClass();
 				if (Collection.class.isAssignableFrom(propertyClass)) {
-					item.setImage(VidgeResources.getInstance().getImage(SharedImages.BARCHART));
 					item.setText(propertyExplorer.getLabel());
 					item.setItemCount(((Collection) value).size());
 					Class propertyType = TypeUtil.getGenericClass(propertyClass, propertyExplorer.getPropertyType());
+					item.setImage(obtainImage(value, VidgeResources.getInstance().getImage(SharedImages.BARCHART)));
 					NodeBundle nodeBundle = new NodeBundle(value, propertyExplorer.getPropertyName(), propertyType);
-					nodeBundle.value = value;
+					// nodeBundle.value = value;
 					item.setData(nodeBundle);
 					return;
 				} else if (Map.class.isAssignableFrom(propertyClass)) {
-					item.setImage(VidgeResources.getInstance().getImage(SharedImages.BARCHART));
 					item.setText(propertyExplorer.getLabel());
 					item.setItemCount(((Map) value).size());
 					Class propertyType = TypeUtil.getGenericClass(propertyClass, propertyExplorer.getPropertyType());
+					item.setImage(obtainImage(value, VidgeResources.getInstance().getImage(SharedImages.BARCHART)));
 					NodeBundle nodeBundle = new NodeBundle(value, propertyExplorer.getPropertyName(), propertyType);
-					nodeBundle.value = value;
+					// nodeBundle.value = value;
 					item.setData(nodeBundle);
 					return;
 				} else if (propertyClass.isArray()) {
-					item.setImage(VidgeResources.getInstance().getImage(SharedImages.CARDFILE));
 					item.setText(propertyExplorer.getLabel());
 					item.setItemCount(Array.getLength(value));
 					Class propertyType = TypeUtil.getGenericClass(propertyClass, propertyExplorer.getPropertyType());
+					item.setImage(obtainImage(value, VidgeResources.getInstance().getImage(SharedImages.CARDFILE)));
 					NodeBundle nodeBundle = new NodeBundle(value, propertyExplorer.getPropertyName(), propertyType);
-					nodeBundle.value = value;
+					// nodeBundle.value = value;
 					item.setData(nodeBundle);
 					return;
 				} else {
@@ -386,7 +402,7 @@ public class TreePanel {
 					if (!TypeUtil.isPrimitive(propertyClass)) {
 						IEntityExplorer explorer = FormRegistry.getEntityExplorer(FormContext.TREE.name(), propertyClass);
 						if (explorer != null && !StringExplorer.class.equals(explorer.getClass())) {
-							item.setImage(VidgeResources.getInstance().getImage(SharedImages.OBJECTS));
+							item.setImage(obtainImage(value, VidgeResources.getInstance().getImage(SharedImages.OBJECTS)));
 							item.setData(new NodeBundle(value, propertyExplorer.getPropertyName()));
 							if (value != null) {
 								item.setItemCount(explorer.getPropertyList().size());
@@ -398,6 +414,18 @@ public class TreePanel {
 				}
 			}
 		});
+	}
+
+	private Image obtainImage(Object value, Image defaultImg) {
+		Image result = defaultImg;
+		IEntityExplorer explorer = FormRegistry.getEntityExplorer(FormContext.TREE.name(), value);
+		if (explorer != null) {
+			result = explorer.getImage(value);
+		}
+		if (result == null) {
+			return defaultImg;
+		}
+		return result;
 	}
 
 	private void addMouseAndSelectionListener() {
@@ -425,11 +453,17 @@ public class TreePanel {
 					}
 				}
 				nodeBundle = (NodeBundle) selection[0].getData();
-				IEntityExplorer explorer = getExplorer(FormContext.TREE, selection[0]);
+				if (nodeBundle.equals(root)) {
+					// return;
+				}
+				IEntityExplorer explorer = getExplorer(FormContext.EDIT, selection[0]);
 				if (nodeBundle.isCollection) {
 					editCollection();
 				} else if (explorer != null) {
-					editItem();
+					explorer.explore(nodeBundle.value);
+					editItem(explorer, nodeBundle);
+				} else {
+					MessageDialog.openWarning(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Unknown", "Form not registered!");
 				}
 			}
 		});
@@ -561,9 +595,14 @@ public class TreePanel {
 	protected void clearCollection() {
 		TreeItem[] selection = tree.getSelection();
 		if (selection.length == 0) {
-			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "No selection", "You have to select Item for removing");
+			MessageDialog.openInformation(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				"No selection",
+				"You have to select Item for removing");
 		} else {
-			if (MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Remove Items", "Do you really want to remove all of This items ?")) { //$NON-NLS-1$
+			if (MessageDialog.openConfirm(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				"Remove Items", "Do you really want to remove all of This items ?")) { //$NON-NLS-1$
 				NodeBundle parentBundle = (NodeBundle) selection[0].getParentItem().getData();
 				NodeBundle nodeBundle = (NodeBundle) selection[0].getData();
 				IEntityExplorer collectionExplorer = getExplorer(FormContext.EDIT, parentBundle);
@@ -581,7 +620,10 @@ public class TreePanel {
 	private void editItem() {
 		TreeItem[] selection = tree.getSelection();
 		if (selection.length == 0) {
-			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "No selection", "You have to select Item for editing");
+			MessageDialog.openInformation(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				"No selection",
+				"You have to select Item for editing");
 		} else {
 			IObjectDialog dialog = null;
 			NodeBundle nodeBundle = (NodeBundle) selection[0].getData();
@@ -593,7 +635,7 @@ public class TreePanel {
 				}
 				IEntityExplorer explorer = getExplorer(FormContext.EDIT, value);
 				IPropertyExplorer propertyExplorer = explorer.getProperty(nodeBundle.propertyName);
-				dialog = new SingleObjectDialog(explorer, "Edit Item", null);
+				dialog = new SingleObjectDialog(explorer, "Edit Item");
 				if (dialog.open() == Window.OK) {
 					Object selection2 = dialog.getSelection();
 					if (propertyExplorer != null) {
@@ -607,10 +649,35 @@ public class TreePanel {
 		}
 	}
 
+	private void editItem(IEntityExplorer explorer, NodeBundle nodeBundle) {
+		IObjectDialog dialog = null;
+		if (nodeBundle != null) {
+			Object value = nodeBundle.value;
+			if (value == null) {
+				addItem();
+				return;
+			}
+			dialog = new SingleObjectDialog(explorer, "Edit Item", null);
+			if (dialog.open() == Window.OK) {
+				IPropertyExplorer propertyExplorer = explorer.getProperty(nodeBundle.propertyName);
+				Object selection2 = dialog.getSelection();
+				if (propertyExplorer != null) {
+					propertyExplorer.setValue(selection2);
+				} else {
+					selection2 = explorer.doInputChanged(selection2, ValueAction.UPDATE, null);
+				}
+				refresh();
+			}
+		}
+	}
+
 	private void editCollection() {
 		TreeItem[] selection = tree.getSelection();
 		if (selection.length == 0) {
-			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "No selection", "You have to select Item for editing");
+			MessageDialog.openInformation(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				"No selection",
+				"You have to select Item for editing");
 		} else {
 			IObjectDialog dialog = null;
 			NodeBundle nodeBundle = (NodeBundle) selection[0].getData();
@@ -621,14 +688,32 @@ public class TreePanel {
 				IEntityExplorer explorer = FormRegistry.getEntityExplorer(FormContext.EDIT.name(), propertyClass);
 				IEntityExplorer collectionExplorer = getExplorer(FormContext.EDIT, parentBundle);
 				IPropertyExplorer propertyExplorer = collectionExplorer.getProperty(nodeBundle.propertyName);
-				dialog = new ObjectListDialog(propertyExplorer.getLabel(), explorer, propertyExplorer);
-				if (dialog.open() == Window.OK) {
-					Object value = dialog.getSelection();
-					if (propertyClass.isArray()) {
-						value = ((List) dialog.getSelection()).toArray();
+				if (propertyExplorer == null) {
+					MessageDialog.openError(getSection().getShell(), "TreePanel 638 ", "Not found IPropertyExplorer for " + nodeBundle.propertyName);
+					return;
+				}
+				if ((style & LIST_TO_EDITOR) != 0) {
+					try {
+						PlatformUI
+							.getWorkbench()
+							.getActiveWorkbenchWindow()
+							.getActivePage()
+							.openEditor(
+								new ListEditorInput<IPropertyExplorer>(propertyExplorer.getLabel(), explorer, propertyExplorer, this),
+								ListEditor.ID);
+					} catch (PartInitException e) {
+						throw new VidgeException(e);
 					}
-					propertyExplorer.setValue(value);
-					refresh();
+				} else {
+					dialog = new ObjectListDialog(propertyExplorer.getLabel(), explorer, propertyExplorer);
+					if (dialog.open() == Window.OK) {
+						Object value = dialog.getSelection();
+						if (propertyClass.isArray()) {
+							value = ((List) dialog.getSelection()).toArray();
+						}
+						propertyExplorer.setValue(value);
+						refresh();
+					}
 				}
 			}
 		}
@@ -637,14 +722,22 @@ public class TreePanel {
 	private void deleteItem() {
 		TreeItem[] selection = tree.getSelection();
 		if (selection.length == 0) {
-			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "No selection", "You have to select Item for removing");
+			MessageDialog.openInformation(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				"No selection",
+				"You have to select Item for removing");
 		} else {
 			TreeItem item = selection[0];
 			NodeBundle nodeBundle = (NodeBundle) item.getData();
 			if (item.getParentItem() == null) {
-				MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Wrong selection", "You can not to remove a root element");
+				MessageDialog.openInformation(
+					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+					"Wrong selection",
+					"You can not to remove a root element");
 			} else {
-				if (MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Remove Item", "Do you really want to remove This item ?")) { //$NON-NLS-1$
+				if (MessageDialog.openConfirm(
+					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+					"Remove Item", "Do you really want to remove This item ?")) { //$NON-NLS-1$
 					TreeItem parentItem = item.getParentItem();
 					IEntityExplorer parentEx = getExplorer(FormContext.EDIT, (NodeBundle) parentItem.getData());
 					IPropertyExplorer propertyExplorer = parentEx.getProperty(nodeBundle.propertyName);
@@ -660,7 +753,10 @@ public class TreePanel {
 	private void addItem() {
 		TreeItem[] selection = tree.getSelection();
 		if (selection.length == 0) {
-			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "No selection", "You have to select Item for removing");
+			MessageDialog.openInformation(
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+				"No selection",
+				"You have to select Item for removing");
 		} else {
 			IObjectDialog dialog = null;
 			TreeItem item = selection[0];
@@ -696,6 +792,7 @@ public class TreePanel {
 		String propertyName;
 		Class propertyType;
 		boolean isCollection = false;
+		Class clazz;
 
 		public NodeBundle(Object value, String propertyName) {
 			this.value = value;
@@ -706,6 +803,11 @@ public class TreePanel {
 			this(value2, propertyName2);
 			this.propertyType = propertyType;
 			isCollection = true;
+		}
+
+		public NodeBundle(String propertyName2, Class clazz) {
+			this.clazz = clazz;
+			this.propertyName = propertyName2;
 		}
 	}
 

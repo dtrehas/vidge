@@ -27,6 +27,7 @@ import org.vidge.inface.IObjectDialog;
 public abstract class ObjectField<T> extends Composite {
 
 	protected Text text;
+	protected boolean lazy = false;
 	protected CustomButton button;
 	protected CustomButton clearButton;
 	public static int ALLOW_KEYS = SWT.KEYCODE_BIT + 48;
@@ -48,10 +49,17 @@ public abstract class ObjectField<T> extends Composite {
 		layout.marginHeight = 0;
 		layout.horizontalSpacing = 0;
 		this.setLayout(layout);
+		initSelection(controller);
 		createContent(style);
 		makeButton();
 		makeClearButton();
 		setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		refresh(selection);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected void initSelection(PropertyController controller) {
+		selection = (T) controller.getExplorer().getValue();
 	}
 
 	protected void init() {
@@ -122,8 +130,7 @@ public abstract class ObjectField<T> extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				setSelection(null);
-				controller.inValidate();
+				showDialog();
 			}
 		});
 	}
@@ -144,7 +151,9 @@ public abstract class ObjectField<T> extends Composite {
 	}
 
 	public void setSelection(T object) {
-		setSelectionInternal(object);
+		this.selection = object;
+		controller.getExplorer().setValue(selection);
+		controller.inValidate();
 		refresh(object);
 	}
 
@@ -159,7 +168,6 @@ public abstract class ObjectField<T> extends Composite {
 		IObjectDialog<T> dialog = getDialog();
 		if (dialog.open() == Window.OK) {
 			setSelection(dialog.getSelection());
-			controller.inValidate();
 		}
 	}
 
@@ -169,11 +177,6 @@ public abstract class ObjectField<T> extends Composite {
 
 	public boolean isValid() {
 		return controller.isValid();
-	}
-
-	protected void setSelectionInternal(T selection) {
-		this.selection = selection;
-		controller.getExplorer().setValue(selection);
 	}
 
 	public void addFocusListener(FocusListener listener) {

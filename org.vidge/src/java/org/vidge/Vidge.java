@@ -6,13 +6,15 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.vidge.controls.TablePanel;
 import org.vidge.controls.TreePanel;
 import org.vidge.dialog.SingleObjectDialog;
+import org.vidge.dialog.VidgeErrorDialog;
 import org.vidge.explorer.FormExplorer;
 import org.vidge.explorer.ObjectExplorer;
-import org.vidge.inface.IForm;
+import org.vidge.form.IForm;
 import org.vidge.inface.IRegistryRequestListener;
 
 @SuppressWarnings({
@@ -66,7 +68,19 @@ public class Vidge {
 	}
 
 	public static TreePanel createTree(Composite parent, Object input) {
+		if (input == null) {
+			throw new VidgeException("*** The  root of tree is  not specified");
+		}
 		TreePanel treePanel = new TreePanel(input);
+		treePanel.createViewer(parent);
+		return treePanel;
+	}
+
+	public static TreePanel createTree(Composite parent, Object input, int style) {
+		if (input == null) {
+			throw new VidgeException("*** The  root of tree is  not specified");
+		}
+		TreePanel treePanel = new TreePanel(input, style);
 		treePanel.createViewer(parent);
 		return treePanel;
 	}
@@ -89,6 +103,12 @@ public class Vidge {
 		return tablePanel;
 	}
 
+	public static <T> TablePanel<T> createTable(Composite parent, Class<T> objClass, Class<?> formClass, List<T> objectList) {
+		TablePanel tablePanel = new TablePanel(objClass, objectList, formClass, Vidge.NO_TOOLKIT);
+		tablePanel.createViewer(parent);
+		return tablePanel;
+	}
+
 	public static TablePanel createRTable(Composite parent, Class<?> objClass, Class<?> formClass, List<?> objectList, int style) {
 		// RTablePanel tablePanel = new RTablePanel(objClass, objectList, formClass, style);
 		TablePanel tablePanel = new TablePanel(objClass, objectList, formClass, style | Vidge.NO_VIRTUAL | Vidge.NO_ACTIONS | Vidge.NO_TOOLKIT);
@@ -102,6 +122,10 @@ public class Vidge {
 
 	public static <T> void registerForm(Class<? extends T> klass, Class<? extends IForm<? extends T>> form) {
 		FormRegistry.registerForm(klass, form);
+	}
+
+	public static <T> void registerForm(Class<? extends T> klass, Class<? extends IForm<? extends T>> form, String context) {
+		FormRegistry.registerContextForm(context, klass, form);
 	}
 
 	public static <T> void registerContextForm(String context, Class<? extends T> klass, Class<? extends IForm<? extends T>> form) {
@@ -130,5 +154,9 @@ public class Vidge {
 
 	public static <T> SingleObjectDialog<T> getObjectDialog(IForm<T> form, String title) {
 		return new SingleObjectDialog(new FormExplorer(form), title);
+	}
+
+	public static void showError(Shell parentShell, String title, String mesg, Throwable err) {
+		new VidgeErrorDialog(parentShell, title, mesg, err).open();
 	}
 }

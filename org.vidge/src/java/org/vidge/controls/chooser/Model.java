@@ -76,7 +76,7 @@ class Model<T> implements IStructuredContentProvider, ITableLabelProvider, IColo
 	}
 
 	List<T> doSort(List<T> list) {
-		Collections.sort(list, columns.get(currentSorterIndex).getColumnSorter());
+		// Collections.sort(list, columns.get(currentSorterIndex).getColumnSorter());
 		return list;
 	}
 

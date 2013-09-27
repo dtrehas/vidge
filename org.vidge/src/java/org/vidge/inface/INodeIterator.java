@@ -2,6 +2,8 @@ package org.vidge.inface;
 
 import java.util.List;
 
+import org.vidge.form.INodeForm;
+
 
 public interface INodeIterator {
 

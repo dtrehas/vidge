@@ -18,8 +18,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.vidge.controls.tree.hierarchy.HierarchyDataProvider;
 import org.vidge.controls.tree.hierarchy.IHierarchyProvider;
-import org.vidge.form.FastBlindNodeForm;
-import org.vidge.inface.INodeForm;
+import org.vidge.form.INodeForm;
+import org.vidge.form.impl.FastBlindNodeForm;
 import org.vidge.util.PositionUtillity;
 
 

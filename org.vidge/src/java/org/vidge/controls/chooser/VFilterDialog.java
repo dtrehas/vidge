@@ -23,7 +23,7 @@ class VFilterDialog<T> extends Dialog {
 	VFilterDialog(VTable<T> table) {
 		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 		this.table = table;
-		setShellStyle(SWT.CLOSE | SWT.RESIZE);
+		setShellStyle(SWT.CLOSE | SWT.RESIZE | SWT.APPLICATION_MODAL);
 		setDefaultImage(VidgeResources.getInstance().getImage(SharedImages.FILTER));
 	}
 

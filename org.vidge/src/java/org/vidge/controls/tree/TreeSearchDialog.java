@@ -15,8 +15,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.vidge.VidgeResources;
 import org.vidge.SharedImages;
+import org.vidge.VidgeResources;
 import org.vidge.util.PositionUtillity;
 
 public class TreeSearchDialog extends Dialog {

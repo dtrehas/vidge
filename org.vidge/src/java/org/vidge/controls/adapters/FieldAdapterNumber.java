@@ -53,6 +53,20 @@ public class FieldAdapterNumber extends AbstractFieldAdapter implements KeyListe
 		return text.getText();
 	}
 
+	// @Override
+	// public void inValidate() {
+	// super.inValidate();
+	// if (!isEnabled() || explorer.getEntityExplorer().getInput() == null) {
+	// return;
+	// }
+	// text.removeModifyListener(this);
+	// if (getVisualValue() != null) {
+	// if (!getVisualValue().equals(validator.getMarshalledValue())) {
+	// setVisualValue(validator.getMarshalledValue());
+	// }
+	// }
+	// text.addModifyListener(this);
+	// }
 	@Override
 	public void setVisualValue(Object newValue) {
 		text.setText(newValue == null ? "" : newValue.toString()); //$NON-NLS-1$

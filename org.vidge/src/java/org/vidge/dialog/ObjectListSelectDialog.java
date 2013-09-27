@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -19,14 +17,12 @@ import org.vidge.util.FormContext;
 public class ObjectListSelectDialog<F> extends AbstractSimpleDialog<List<F>> {
 
 	private boolean singleSelect = false;
-	private IPropertyExplorer propertyExplorer;
 	private ListSelectPanel<F> panel;
 	private Class<F> klassIn;
 
 	@SuppressWarnings("unchecked")
 	public ObjectListSelectDialog(String title, IEntityExplorer entityExplorer, IPropertyExplorer propertyExplorer, boolean singleSelect) {
-		super(entityExplorer, title, DEFAULT_SIZE);
-		this.propertyExplorer = propertyExplorer;
+		super(entityExplorer, title, DEFAULT_SIZE, propertyExplorer);
 		this.singleSelect = singleSelect;
 		selection = (List<F>) propertyExplorer.getValidValues();
 	}
@@ -46,13 +42,14 @@ public class ObjectListSelectDialog<F> extends AbstractSimpleDialog<List<F>> {
 			panel = new ListSelectPanel<F>(parent, explorer, propertyExplorer, singleSelect);
 		}
 		panel.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
-		panel.getTable().addDoubleClickListener(new IDoubleClickListener() {
-
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				okPressed();
-			}
-		});
+		// panel.getTable().addDoubleClickListener(new IDoubleClickListener() {
+		//
+		// @Override
+		// public void doubleClick(DoubleClickEvent event) {
+		// selection = panel.getSelection();
+		// okPressed();
+		// }
+		// });
 		panel.addChangeListener(new IChangeListener() {
 
 			@Override

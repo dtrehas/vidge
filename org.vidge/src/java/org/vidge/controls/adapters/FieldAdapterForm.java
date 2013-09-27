@@ -48,7 +48,7 @@ public class FieldAdapterForm extends AbstractFieldAdapter {
 			form.setEnabled(false);
 		} else {
 			entityExplorer.checkInput();
-			form.inValidate();
+			form.inValidate(null);
 			form.refreshView();
 		}
 		section.setClient(pane);
@@ -77,7 +77,7 @@ public class FieldAdapterForm extends AbstractFieldAdapter {
 			public void widgetSelected(SelectionEvent e) {
 				entityExplorer.createInput();
 				form.setEnabled(true);
-				form.inValidate();
+				form.inValidate(null);
 				form.refreshView();
 				controller.inValidate();
 				controller.refreshView();

@@ -11,8 +11,8 @@ import org.eclipse.swt.graphics.Image;
 import org.vidge.VidgeException;
 import org.vidge.inface.IEntityExplorer;
 import org.vidge.inface.IPropertyExplorer;
-import org.vidge.inface.ValueAction;
 import org.vidge.util.StringUtil;
+import org.vidge.util.ValueAction;
 
 public abstract class EntityExplorer implements IEntityExplorer {
 
@@ -208,5 +208,20 @@ public abstract class EntityExplorer implements IEntityExplorer {
 			return StringUtil.NN;
 		}
 		return value.toString();
+	}
+
+	@Override
+	public Image getImage(Object value) {
+		return null;
+	}
+
+	@Override
+	public String getHeader() {
+		return null;
+	}
+
+	@Override
+	public String getDescription() {
+		return null;
 	}
 }
