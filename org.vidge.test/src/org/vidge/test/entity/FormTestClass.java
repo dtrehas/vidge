@@ -13,6 +13,7 @@ public class FormTestClass {
 	private Boolean booleanValue = true;
 	private Integer invalue = 8790;
 	private Long longValue = 346L;
+	private Double doubleValue = 45645.7;
 	private Date datevalue = new Date();
 	private File filevalue;
 	private Color color;
@@ -170,5 +171,13 @@ public class FormTestClass {
 
 	public void setTestList2(List<FormTestClass> testList2) {
 		this.testList2 = testList2;
+	}
+
+	public Double getDoubleValue() {
+		return doubleValue;
+	}
+
+	public void setDoubleValue(Double doubleValue) {
+		this.doubleValue = doubleValue;
 	}
 }

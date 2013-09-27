@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.vidge.inface.IForm;
+import org.vidge.form.IForm;
 import org.vidge.test.entity.FormTestClass;
 import org.vidge.util.VisualProperty;
 

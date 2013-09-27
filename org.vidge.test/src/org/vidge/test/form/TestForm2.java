@@ -3,12 +3,13 @@ package org.vidge.test.form;
 import java.util.Date;
 import java.util.List;
 
-import org.vidge.inface.IForm;
+import org.vidge.form.IForm;
+import org.vidge.form.IFormFactory;
 import org.vidge.test.entity.FormTestClass2;
 import org.vidge.util.VisualControlType;
 import org.vidge.util.VisualProperty;
 
-public class TestForm2 implements IForm<FormTestClass2> {
+public class TestForm2 implements IForm<FormTestClass2>, IFormFactory {
 
 	private FormTestClass2 input;
 
@@ -81,5 +82,28 @@ public class TestForm2 implements IForm<FormTestClass2> {
 
 	public void setTestList(List<FormTestClass2> testList) {
 		input.setTestList(testList);
+	}
+
+	@Override
+	public Object newInstance(Class<?> inputClass, Object context) {
+		return new FormTestClass2();
+	}
+
+	@Override
+	public boolean removeInstance(Class<?> inputClass, Object context) {
+		return false;
+	}
+
+	@Override
+	public void instanceApply() {
+	}
+
+	@Override
+	public void instanceCancel() {
+	}
+
+	@Override
+	public Object checkInstance(Object context) {
+		return null;
 	}
 }

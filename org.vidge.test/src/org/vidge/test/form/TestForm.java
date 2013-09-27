@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Color;
-import org.vidge.inface.IForm;
+import org.vidge.form.IForm;
 import org.vidge.test.entity.FormTestClass;
 import org.vidge.test.entity.FormTestClass2;
 import org.vidge.test.entity.TestEnum;
@@ -151,12 +151,22 @@ public class TestForm implements IForm<FormTestClass> {
 		input.setChild(child);
 	}
 
-	@VisualProperty(order = 12)
+	// @VisualProperty(order = 12)
+	@VisualProperty(order = 12, lazyOverride = true, lazy = true)
 	public List<FormTestClass> getTestList2() {
 		return input.getTestList2();
 	}
 
 	public void setTestList2(List<FormTestClass> testList2) {
 		input.setTestList2(testList2);
+	}
+
+	@VisualProperty(order = 13, required = true)
+	public Double getDoubleValue() {
+		return input.getDoubleValue();
+	}
+
+	public void setDoubleValue(Double doubleValue) {
+		input.setDoubleValue(doubleValue);
 	}
 }

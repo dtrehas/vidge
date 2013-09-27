@@ -56,5 +56,33 @@
          </menu>
       </menuContribution>
    </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.vidge.test.application"
+            name="vodge_test">
+         <property
+               name="appName"
+               value="vodge_test">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="00FF00">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="25,25,300,20">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="5,5,330,10">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+      </product>
+   </extension>
 
 </plugin>

@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.vidge.inface.IForm;
+import org.vidge.form.IForm;
 import org.vidge.util.VisualControlType;
 import org.vidge.util.VisualProperty;
 
