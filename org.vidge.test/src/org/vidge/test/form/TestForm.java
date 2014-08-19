@@ -152,7 +152,7 @@ public class TestForm implements IForm<FormTestClass> {
 	}
 
 	// @VisualProperty(order = 12)
-	@VisualProperty(order = 12, lazyOverride = true, lazy = true)
+	@VisualProperty(order = 12)
 	public List<FormTestClass> getTestList2() {
 		return input.getTestList2();
 	}

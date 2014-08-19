@@ -6,10 +6,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Color;
+import org.langcom.locale.LocalizedString;
 
 public class FormTestClass {
 
 	private String name = "TestClass", description;
+	private LocalizedString localizedString;
 	private Boolean booleanValue = true;
 	private Integer invalue = 8790;
 	private Long longValue = 346L;
@@ -179,5 +181,13 @@ public class FormTestClass {
 
 	public void setDoubleValue(Double doubleValue) {
 		this.doubleValue = doubleValue;
+	}
+
+	public LocalizedString getLocalizedString() {
+		return localizedString;
+	}
+
+	public void setLocalizedString(LocalizedString localizedString) {
+		this.localizedString = localizedString;
 	}
 }
