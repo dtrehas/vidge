@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension-point id="org.vidge.form" name="Vidge Form" schema="schema/org.vidge.form.exsd"/>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.vidge.controls.editor.ListEditor"
+            default="false"
+            icon="icons/objects.gif"
+            id="org.vidge.controls.editor.ListEditor"
+            name="List Editor">
+      </editor>
+   </extension>
+
+</plugin>
