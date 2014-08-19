@@ -9,6 +9,8 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
@@ -22,6 +24,8 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.langcom.LangUtils;
+import org.langcom.log.LookLog;
 import org.vidge.PlainForm;
 import org.vidge.Vidge;
 import org.vidge.controls.TablePanel;
@@ -53,6 +57,9 @@ public class View extends ViewPart {
 	private TabFolder folder;
 
 	public void createPartControl(Composite parent) {
+		LangUtils.capitalize("ertert");
+		LookLog.init();
+		LookLog.info(this.getClass().getName(), "1111111111");
 		Vidge.registerForm(FormTestClass2.class, TestForm2.class);
 		Vidge.registerForm(FormTestClass.class, TestForm.class, FormContext.EDIT.name());
 		Vidge.registerForm(FormTestClass.class, TestForm3.class, FormContext.TABLE.name());
@@ -62,6 +69,17 @@ public class View extends ViewPart {
 		final TreePanel treePanel = new TreePanel(new ObjectExplorer(input));
 		List<FormTestClass> objectList = createSmallTestList();
 		treePanel.createViewer(sashForm);
+		treePanel.getTree().addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				System.out.println("------------erefr---------  " + e.keyCode);
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+		});
 		treePanel.getSection().setText("Tree structure of object");
 		Composite composite = new Composite(sashForm, SWT.NONE);
 		composite.setLayout(new GridLayout());
@@ -69,6 +87,7 @@ public class View extends ViewPart {
 		folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 		input.setTestList2(objectList);
 		pageOfRawClass(input, treePanel);
+		pageOfRegisteredForm(input, treePanel);
 		pageOfRegisteredFormWithEmbedded(input, treePanel);
 		pageOformWithEmbeddedList(input, treePanel);
 		// pageOfDisabledForm();
@@ -168,6 +187,28 @@ public class View extends ViewPart {
 		item.setControl(sashForm);
 	}
 
+	protected void pageOfRegisteredForm(final FormTestClass input, final TreePanel treePanel) {
+		TabItem item = new TabItem(folder, SWT.NONE);
+		item.setText("  Registered form");
+		PlainForm createForm = Vidge.createForm(new TestForm3(input));
+		createForm.addStatusListener(new IStatusListener() {
+
+			@Override
+			public void statusChanged(PropertyStatus status) {
+				treePanel.refresh();
+			}
+		});
+		item.setControl(createForm.getPane(folder, SWT.NONE));
+		// SashForm sashForm = new SashForm(folder, SWT.VERTICAL);
+		// createForm.getPane(sashForm, SWT.NONE);
+		// Label label = new Label(sashForm, SWT.CENTER);
+		// label.setImage(Activator.getDefault().getImageDescriptor("/icons/Capture2.JPG").createImage());
+		// sashForm.setWeights(new int[] {
+		// 60, 40
+		// });
+		// item.setControl(sashForm);
+	}
+
 	protected void pageOfRegisteredFormWithEmbedded(final FormTestClass input, final TreePanel treePanel) {
 		TabItem item = new TabItem(folder, SWT.NONE);
 		item.setText("  Registered form with embedded");
@@ -194,10 +235,10 @@ public class View extends ViewPart {
 	protected void pageOfTablePanel(final List<FormTestClass> objectList) {
 		TabItem item;
 		item = new TabItem(folder, SWT.NONE);
-		item.setText("Table Panel");
+		item.setText("Table Panel check");
 		final List<FormTestClass> list = new ArrayList<FormTestClass>(objectList);
 		SashForm sashForm = new SashForm(folder, SWT.VERTICAL);
-		TablePanel<FormTestClass> tablePanel = new TablePanel<FormTestClass>(sashForm, FormTestClass.class, list, VTable.NO_NUM_COLUMN);
+		TablePanel<FormTestClass> tablePanel = new TablePanel<FormTestClass>(sashForm, FormTestClass.class, list, VTable.NO_NUM_COLUMN | SWT.CHECK);
 		tablePanel.setActions(new Action() {
 
 			{
@@ -210,6 +251,18 @@ public class View extends ViewPart {
 				// todo
 			}
 		});
+		tablePanel.addContextMenu(new Action() {
+
+			{
+				setText("Edit My");
+				setImageDescriptor(Activator.getImageDescriptor("/icons/alt_window_16.gif"));
+			}
+
+			@Override
+			public void run() {
+				// todo
+			}
+		}, 0);
 		tablePanel.addFormChangeListener(new IFormInputChangeListener() {
 
 			@Override
@@ -363,6 +416,22 @@ public class View extends ViewPart {
 					}
 				});
 				dialog.open();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		button = new Button(parent, SWT.PUSH);
+		button.setText("Wizard");
+		button.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//
+				for (int a = 0; a < 500; a++) {
+					LookLog.info(this.getClass().getName(), "Looog " + a);
+				}
 			}
 
 			@Override

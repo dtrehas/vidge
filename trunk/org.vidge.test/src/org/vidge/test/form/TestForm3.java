@@ -1,9 +1,12 @@
 package org.vidge.test.form;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.swt.graphics.Color;
+import org.langcom.locale.LocalizedString;
 import org.vidge.form.IForm;
 import org.vidge.test.entity.FormTestClass;
 import org.vidge.test.entity.FormTestClass2;
@@ -30,6 +33,20 @@ public class TestForm3 implements IForm<FormTestClass> {
 	@Override
 	public FormTestClass getInput() {
 		return input;
+	}
+
+	@VisualProperty(order = 0)
+	public String getName() {
+		return input.getName();
+	}
+
+	@VisualProperty(order = 1)
+	public LocalizedString getLocalizedString() {
+		return input.getLocalizedString();
+	}
+
+	public void setLocalizedString(LocalizedString localizedString) {
+		input.setLocalizedString(localizedString);
 	}
 
 	@VisualProperty(order = 6, control = VisualControlType.OBJECT_EDITOR)
@@ -59,7 +76,7 @@ public class TestForm3 implements IForm<FormTestClass> {
 		return objectList;
 	}
 
-	@VisualProperty(order = 11, embedded = true)
+	@VisualProperty(order = 11)
 	public FormTestClass getChild() {
 		return input.getChild();
 	}
@@ -73,8 +90,97 @@ public class TestForm3 implements IForm<FormTestClass> {
 		return input.getTestList();
 	}
 
-	@VisualProperty(order = 9, lazyOverride = true, lazy = true)
+	@VisualProperty(order = 9)
 	public List<FormTestClass> getTestList2333() {
 		return input.getTestList2();
+	}
+
+	public void setName(String name) {
+		input.setName(name);
+	}
+
+	@VisualProperty(order = 12)
+	public Integer getInvalue() {
+		return input.getInvalue();
+	}
+
+	public void setInvalue(Integer invalue) {
+		input.setInvalue(invalue);
+	}
+
+	@VisualProperty(order = 13)
+	public Long getLongValue() {
+		return input.getLongValue();
+	}
+
+	public void setLongValue(Long longValue) {
+		input.setLongValue(longValue);
+	}
+
+	@VisualProperty(order = 14)
+	public Date getDatevalue() {
+		return input.getDatevalue();
+	}
+
+	public void setDatevalue(Date datevalue) {
+		input.setDatevalue(datevalue);
+	}
+
+	@VisualProperty(order = 15)
+	public File getFilevalue() {
+		return input.getFilevalue();
+	}
+
+	public void setFilevalue(File filevalue) {
+		input.setFilevalue(filevalue);
+	}
+
+	@VisualProperty(order = 16)
+	public Color getColor() {
+		return input.getColor();
+	}
+
+	public void setColor(Color color) {
+		input.setColor(color);
+	}
+
+	public void setTestList(List<FormTestClass2> testList) {
+		input.setTestList(testList);
+	}
+
+	@VisualProperty(order = 17)
+	public Boolean getBooleanValue() {
+		return input.getBooleanValue();
+	}
+
+	public void setBooleanValue(Boolean booleanValue) {
+		input.setBooleanValue(booleanValue);
+	}
+
+	@VisualProperty(order = 18)
+	public List<FormTestClass> getTestList2() {
+		return input.getTestList2();
+	}
+
+	public void setTestList2(List<FormTestClass> testList2) {
+		input.setTestList2(testList2);
+	}
+
+	@VisualProperty(order = 19)
+	public Double getDoubleValue() {
+		return input.getDoubleValue();
+	}
+
+	public void setDoubleValue(Double doubleValue) {
+		input.setDoubleValue(doubleValue);
+	}
+
+	@VisualProperty(order = 22, control = VisualControlType.TEXTAREA)
+	public String getDescription() {
+		return input.getDescription();
+	}
+
+	public void setDescription(String description) {
+		input.setDescription(description);
 	}
 }
