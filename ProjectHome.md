@@ -1,0 +1,1 @@
+Automatically creation a GUI for edition a entities without complicated operations with widgets and layouts
